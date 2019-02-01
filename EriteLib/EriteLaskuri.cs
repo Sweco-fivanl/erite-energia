@@ -32,15 +32,24 @@ namespace EriteLib
             return Q;
         }
 
+        // 11§ Rakennuksen vakioitu kaytto
+        // 10 § Ulkoilmavirrat ja huonelampotilat
+        public double IlmanvaihdonLammitysenergia()
+        {
+            // "vain korostukset" kaava 3.11
+
+            return 0;
+        }
+
         private const double IlmanTiheys = 1.2; // kg/m3
         private const double IlmanOmLampKap = 1000; // J/kg*K
 
         public double VuotoilmanLammitysenergia()
         {
-            var n50 = 4.0; // TODO: taulukosta, 1/h
+            var n50 = 4.0; // TODO: taulukosta, 1/h, per vuosikymmen
             var ikkunaAla = 24.4;
             var vaipanAlaJaAlapohja = 2 * 140.0 + 90.0 + ikkunaAla + 8.2;
-            Debug.WriteLine($"[ERITE] vaipan ja alapohjan pinta-ala: {vaipanAlaJaAlapohja}");
+            Debug.WriteLine($"[ERITE] vaipan ja alapohjan pinta-ala: {vaipanAlaJaAlapohja} m2");
 
             var kohteenIlmatilavuus = 382;
 
@@ -62,7 +71,7 @@ namespace EriteLib
         private double GetQ50(double n50, double alaVaippaKaikki, int ilmatilavuus)
         {
             var ret = (n50/alaVaippaKaikki)*ilmatilavuus;
-            Debug.WriteLine($"[ERITE] Q50: {ret}");
+            Debug.WriteLine($"[ERITE] Q50: {ret} m3/h*m2");
             return ret;
         }
 
