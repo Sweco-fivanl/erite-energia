@@ -14,6 +14,8 @@ namespace EriteConsoleRunner
             Console.WriteLine($"test: {test.LaskeJotain()}");
 
             Console.WriteLine($"Maanvaraisen laatan johtumishavio: {test.MaanvaraisenLaatanJohtumishavio()}");
+            Console.WriteLine($"Vuotoilman lammitysenergia: {test.VuotoilmanLammitysenergia()} kWh");
+            
         }
     }
 }
