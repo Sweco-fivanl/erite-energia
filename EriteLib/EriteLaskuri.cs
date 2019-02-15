@@ -232,6 +232,25 @@ namespace EriteLib
             return result1 + result2 + result3 + result4;
         }
 
+        public double ValaistusJaKulutussahko()
+        {
+            // Valaistuksen ja kuluttajalaitteiden sähkönkulutus
+            // 11§ Rakennuksen vakioitu käyttö
+
+            // valaistus 6W/m2
+            var valaisuts = 6; // W/m2
+            var val_KA = 0.1;
+
+            var kulutt = 3; // W/m2
+            var kul_KA = 0.6; // käyttöaste
+
+            var tunnit = HoursInMonth(1);
+
+            var kwhs = _attrs.Area * (valaisuts * val_KA + kulutt * kul_KA) * tunnit / 1000;
+            Debug.WriteLine($"[ERITE] valaistus ja käyttösähkö: {kwhs} kWh.");
+            return kwhs;
+        }
+
         internal double LKVKierto()
         {
             var ala = _attrs.Area;
