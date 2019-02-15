@@ -117,8 +117,17 @@ namespace EriteLib
 
             // lämmöntalteenoton jälkeinen tuloilman keskimääräinen lämpötila (tammikuu)
             // Kaava 3.11
-            var T_lto = T_ulko + (theta / (runFact * 1 * IlmanTiheys * IlmanOmLampKap));
+            var tuloilmavirta = poistoilmavirta;
+            var weeFact = 1.0;
+            var T_lto = T_ulko + (theta / (runFact * weeFact * IlmanTiheys * IlmanOmLampKap * tuloilmavirta));
             Debug.WriteLine($"[ERITE] LTO temp: {T_lto} C.");
+
+            // Kaava 3.10
+            var T_sp = _attrs.Ventilation.KorvausilmanLampo; // sisään puhallettava ilma e.g. 18'C
+            var dT_puh = 0;//T_sisa - T_sp;
+            var Q_iv = runFact * weeFact * IlmanTiheys * IlmanOmLampKap * tuloilmavirta*((T_sp - dT_puh) - T_lto) *
+                       HoursInMonth(1) / 1000;
+            Debug.WriteLine($"[ERITE] Ilmanvaihdon lamm. nettotarve: {Q_iv} kWh.");
 
 
             return 0;
