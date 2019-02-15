@@ -27,6 +27,8 @@ namespace EriteLib
             };
         }
 
+        //private double _tuloilmavirta;
+
         private const double OutdoorTempJanuary = -3.97; // tampere
 
         //private const int HoursInMonth
@@ -91,8 +93,12 @@ namespace EriteLib
             return Q_vuotoilma;
         }
 
+        private double GetPoistoIlmaVirta()
+        {
+            return _attrs.Area * _attrs.Ventilation.Ulkoilmavirta / 1000; // dm3 -> m3
+        }
 
-        public double UusiFunktio()
+        public double IVNettotarvePartial()
         {
             // TODO: lähtöarvo, tulo-poisto tasapaino
             // todo: kuukausittaiset keskilämpötilat, per asuinpaikka
@@ -100,7 +106,7 @@ namespace EriteLib
             // TODO: lähtöarvo, LTO:n vuosihyötysuhde
 
 
-            var poistoilmavirta = _attrs.Area * _attrs.Ventilation.Ulkoilmavirta / 1000; // dm3 -> m3
+            var poistoilmavirta = GetPoistoIlmaVirta();
             // TODO: kerro 24/7 arvolla
             Debug.WriteLine($"[ERITE] poistoilmavirta: {poistoilmavirta} m3/s");
             var T_sisa = _attrs.InTemp;
@@ -129,10 +135,27 @@ namespace EriteLib
                        HoursInMonth(1) / 1000;
             Debug.WriteLine($"[ERITE] Ilmanvaihdon lamm. nettotarve: {Q_iv} kWh.");
 
+            // Kaava 3.14
+            // 18C - 21C (öljylämmityksen kertoimella)
 
-            return 0;
+            // Q_iv (sähkön kertoimella)
+
+            return Q_iv;
         }
 
+        public double IVTuloilmanLammittaminen()
+        {
+            var T_sisa = _attrs.InTemp;
+            //var T_sisaan = _attrs.Ventilation.KorvausilmanLampo;
+            var T_ulko = OutdoorTempJanuary;
+            //var dT_vent = T_sisa - T_sisaan;
+            var tuloilmavirta = GetPoistoIlmaVirta();
+
+            var Q_iv_korv = IlmanTiheys * IlmanOmLampKap * tuloilmavirta * (T_sisa - T_ulko) *
+                       HoursInMonth(1) / 1000;
+            Debug.WriteLine($"[ERITE] Korvausilman lämpenemisen lämpöenergian tarve: {Q_iv_korv} kWh.");
+            return Q_iv_korv;
+        }
 
         // m3/h*m2
         private double GetQ50(double n50, double alaVaippaKaikki, int ilmatilavuus)
