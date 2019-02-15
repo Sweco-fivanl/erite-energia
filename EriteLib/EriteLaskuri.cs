@@ -20,7 +20,7 @@ namespace EriteLib
                 {
                     RunningHours = 24,
                     Ulkoilmavirta = 0.4, // dm/s,m2
-                    LTO_COP = 0.486, // vuosihyötysuhde
+                    LTO_COP = 0.50, // vuosihyötysuhde
                     KorvausilmanLampo = 18.0, // tulo huoneeseen, astetta-C
 
                 }
@@ -100,14 +100,20 @@ namespace EriteLib
             // TODO: lähtöarvo, LTO:n vuosihyötysuhde
 
 
-            var poistoilmavirta = _attrs.Area * _attrs.Ventilation.Ulkoilmavirta;
+            var poistoilmavirta = _attrs.Area * _attrs.Ventilation.Ulkoilmavirta / 1000;
             // TODO: kerro 24/7 arvolla
             Debug.WriteLine($"[ERITE] poistoilmavirta: {poistoilmavirta} m3/s");
             var T_sisa = _attrs.InTemp;
             var T_ulko = OutdoorTempJanuary;
             // TODO: 30 % taulukkoarvo, riippuu vuosiluvusta
             //       voi olla myös painovoimainen, nolla
-            var vuosihyotysudhe = _attrs.Ventilation.LTO_COP ?? 0.30;
+            var scop = _attrs.Ventilation.LTO_COP ?? 0.30;
+            Debug.WriteLine($"[ERITE] LTO vuosihyotysuhde: {scop * 100} %.");
+
+            var runFact = _attrs.Ventilation.RunningHours / 24;
+            // lämmöntalteenotolla talteenotettu teho (tammikuu) kaava 3.12
+            var theta = scop * runFact * IlmanTiheys * IlmanOmLampKap * poistoilmavirta * (T_sisa - T_ulko);
+            Debug.WriteLine($"[ERITE] LTO talteenotettu teho: {theta} W.");
 
             return 0;
         }
