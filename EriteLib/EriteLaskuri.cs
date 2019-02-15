@@ -98,7 +98,8 @@ namespace EriteLib
             return _attrs.Area * _attrs.Ventilation.Ulkoilmavirta / 1000; // dm3 -> m3
         }
 
-        public double IVNettotarvePartial()
+        // kerroin sähkö ??
+        internal double IVNettotarvePartial()
         {
             // TODO: lähtöarvo, tulo-poisto tasapaino
             // todo: kuukausittaiset keskilämpötilat, per asuinpaikka
@@ -143,7 +144,17 @@ namespace EriteLib
             return Q_iv;
         }
 
-        public double IVTuloilmanLammittaminen()
+        public double IVBrutto()
+        {
+            // piti tulla 148
+            var kaikki = IVTuloilmanLammittaminen();
+            var lto = IVNettotarvePartial();
+            return kaikki - lto;
+        }
+
+        
+        // kerroin öljy
+        internal double IVTuloilmanLammittaminen()
         {
             var T_sisa = _attrs.InTemp;
             //var T_sisaan = _attrs.Ventilation.KorvausilmanLampo;
@@ -157,6 +168,60 @@ namespace EriteLib
             return Q_iv_korv;
         }
 
+        private const int Hattu = 35; // kWh/m2-v
+        private const int ThresholdHattu = 4200; // kWh
+
+        internal double KayttoVedenVakioituKaytto()
+        {
+            var ala = _attrs.Area;
+            // lämpimän käyttöveden tarve vuodessa
+
+            var tarve = ala * Hattu;
+            var tarveValittu = Math.Min(tarve, ThresholdHattu);
+            Debug.WriteLine($"[ERITE] Käyttöveden lämmitysenergian tarve: {tarveValittu} kWh.");
+
+
+            return tarveValittu;
+
+
+
+        }
+
+        public double LKVTarve()
+        {
+            // TODO: kaava 6.5
+            // laske energia...
+            // TAulukko 6.4
+            // siirron vuosihyötysuhde
+            var taulukosta = 0.96;
+            var kiertoHavio = LKVKierto();
+            var varaajaHavio = 0;
+            var kuukausi = (KayttoVedenVakioituKaytto()/ taulukosta) * (DaysInMonth(1)/365.0) + varaajaHavio + kiertoHavio;
+            Debug.WriteLine($"[ERITE] LKV energia: {kuukausi} kWh.");
+            return kuukausi;
+        }
+
+        internal double LKVKierto()
+        {
+            var ala = _attrs.Area;
+
+            // Kiertojohdon pituus taulukosta 6.7
+            var Llkv_omin = 0.2; // Kiertojohdon ominaispituus: Llkv, omin, m / m2
+            // kiertojohdon eristys (taulukko 6.6)
+            var Llkv_havio = 15; // kv, kiertohäviö, omin, W / m
+            // TODO: varaajahäviöt pitäs laskee tähän
+            // KOULU case, öljykattilan kanssa ei erillistä varaajaa, häviöt lasketaan erikseen.
+
+            // kiertojohdon häviön teho
+            var havioTeho = ala * Llkv_omin * Llkv_havio;
+            //Debug.WriteLine($"[ERITE] LKV kierto häviö: {havioTeho} W.");
+
+            // kiertojohdon häviö tammikuussa
+            var kwht = havioTeho * HoursInMonth(1) / 1000;
+            Debug.WriteLine($"[ERITE] LKV kierto häviö: {havioTeho} W, {kwht} kWh.");
+            return kwht;
+        }
+
         // m3/h*m2
         private double GetQ50(double n50, double alaVaippaKaikki, int ilmatilavuus)
         {
@@ -166,6 +231,11 @@ namespace EriteLib
         }
 
         private int HoursInMonth(int month)
+        {
+            return 24 * DaysInMonth(month);
+        }
+
+        private int DaysInMonth(int month)
         {
             switch (month)
             {
@@ -177,15 +247,15 @@ namespace EriteLib
                 case 10:
                 case 12:
                 {
-                    return 24 * 31;
+                    return 31;
                 }
                 case 4:
                 {
-                    return 24 * 28;
+                    return 28;
                 }
                 default:
                 {
-                    return 24 * 30;
+                    return 30;
                 }
             }
         }

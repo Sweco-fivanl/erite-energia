@@ -16,7 +16,10 @@ namespace EriteConsoleRunner
             Console.WriteLine($"Maanvaraisen laatan johtumishavio: {test.MaanvaraisenLaatanJohtumishavio()}");
             Console.WriteLine($"Vuotoilman lammitysenergia: {test.VuotoilmanLammitysenergia()} kWh");
 
-            Console.WriteLine($"e luku whatnot: {test.IVNettotarvePartial()} kWh");
+            Console.WriteLine($"e IV Nettotarve: {test.IVBrutto()} kWh");
+            //Console.WriteLine($"e KV Nettotarve: {test.KayttoVedenVakioituKaytto()} kWh/v");
+            Console.WriteLine($"e KV Nettotarve: {test.LKVTarve()} kWh");
+            
         }
     }
 }
