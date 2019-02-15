@@ -251,6 +251,16 @@ namespace EriteLib
             return kwhs;
         }
 
+        public double LampokuormaHenkiloista()
+        {
+            //
+            var factor = 0.6;
+            var power = 2; // W
+            var kwhs = factor * power * _attrs.Area * HoursInMonth(1) / 1000;
+            Debug.WriteLine($"[ERITE] ihmisenergia: {kwhs} kWh.");
+            return kwhs;
+        }
+
         internal double LKVKierto()
         {
             var ala = _attrs.Area;
