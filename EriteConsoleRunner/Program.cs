@@ -19,6 +19,7 @@ namespace EriteConsoleRunner
             Console.WriteLine($"e IV Nettotarve: {test.IVBrutto()} kWh");
             //Console.WriteLine($"e KV Nettotarve: {test.KayttoVedenVakioituKaytto()} kWh/v");
             Console.WriteLine($"e KV Nettotarve: {test.LKVTarve()} kWh");
+            Console.WriteLine($"e IV sahkoenergia: {test.Kohta5LVIPumputSahkontarve()} kWh");
             
         }
     }

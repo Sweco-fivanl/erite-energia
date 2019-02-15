@@ -201,6 +201,37 @@ namespace EriteLib
             return kuukausi;
         }
 
+        public double Kohta5LVIPumputSahkontarve()
+        {
+            // TODO: taulukko sähkökrääsää
+
+            // IV:N sähkön kulutus
+            // Ominaissähköteho
+            // Taulukko 3. Ilmanvaihtojärjestelmä - Rakennusluvan vireilletulovuosi
+            var NominalPower = 2.5; // kW/m2/s (Taulukko 3)
+            var tuloilmavirta = GetPoistoIlmaVirta();
+            var result1 = tuloilmavirta * NominalPower * HoursInMonth(1);
+            Debug.WriteLine($"[ERITE] IV sähköenergia: {result1} kWh.");
+
+            // vesikiertoisen lattialämmityksen sähkönkulutus
+            // taulukko 9
+            var mikaIhme = 2.5; // kWh/m2-v 
+            var result2 = _attrs.Area * mikaIhme * (DaysInMonth(1) / 365.0);
+            Debug.WriteLine($"[ERITE] LL sähköenergia: {result2} kWh.");
+
+            // öljylämmityksen sähköntarvei (taulukko 10)
+            var whot = 0.99; //kWh/m2/vuosi
+            var result3 = _attrs.Area * (DaysInMonth(1) / 365.0);
+            Debug.WriteLine($"[ERITE] ÖP sähköenergia: {result3} kWh.");
+
+            // lämpimän käyttöveden kiertopumpun sähkönkulutus (kaava 6.7)
+            var pumpunTeho = 30; // W
+            var result4 = pumpunTeho * HoursInMonth(1) / 1000;
+            Debug.WriteLine($"[ERITE] LKV kiertopumppu sähköenergia: {result4} kWh.");
+
+            return result1 + result2 + result3 + result4;
+        }
+
         internal double LKVKierto()
         {
             var ala = _attrs.Area;
