@@ -69,7 +69,59 @@ namespace SkiaWpf.View
           };
           var coord = new SKPoint(scaledSize.Width / 2, (scaledSize.Height + paint.TextSize) / 2);
           canvas.DrawText("SkiaSharp", coord, paint);
-      }
+
+          const float hatchWidth = 20;
+
+          // create the path (diagonal hatch) with the center at 0,0
+          var hatchPath = new SKPath();
+          hatchPath.MoveTo(0, hatchWidth);
+          hatchPath.LineTo(hatchWidth, 0);
+          hatchPath.LineTo(0, -hatchWidth);
+          hatchPath.LineTo(-hatchWidth, 0);
+          hatchPath.LineTo(0, hatchWidth);
+
+          // the size of the pattern
+          var hatchMatrix = SKMatrix.MakeScale(hatchWidth * 2, hatchWidth * 2);
+          // create the paint
+          var hatchPaint = new SKPaint
+          {
+              PathEffect = SKPathEffect.Create2DPath(hatchMatrix, hatchPath),
+              Color = SKColors.Gray,
+              Style = SKPaintStyle.Stroke,
+              StrokeWidth = 1
+          };
+
+          // the rectangle to draw
+          var rect = SKRect.Create(60, 50, 310, 300);
+
+          // draw the background
+          var backgroundPaint = new SKPaint
+          {
+              Color = SKColors.LightGray,
+              Style = SKPaintStyle.Fill,
+          };
+          canvas.DrawRect(rect, backgroundPaint);
+
+          // shift the drawing because the 2D Path starts at the canvas origin
+          canvas.Save();
+          canvas.Translate(rect.Location);
+
+          var hatchRect = SKRect.Create(rect.Size);
+          canvas.ClipRect(hatchRect);
+          canvas.DrawRect(hatchRect, hatchPaint);
+
+          // undo the translate and clip
+          canvas.Restore();
+
+          // draw a border
+          var borderPaint = new SKPaint
+          {
+              Color = SKColors.DarkGray,
+              Style = SKPaintStyle.Stroke,
+              StrokeWidth = 3
+          };
+          canvas.DrawRect(rect, borderPaint);
+        }
 
       public static float ToSingle(double? value)
       {
