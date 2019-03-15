@@ -444,6 +444,10 @@ namespace EriteLib
             var QILP = Kohta8ILPPerVuosi() * (DaysInMonth(kk) / 365d);
             Debug.WriteLine($"[ERITE] Ostoenergia Oljy: {Qlammitys_oljy} kWh, uuni {Quuni} kWh, ILP: {QILP}");
 
+            // TODO: sähkö 982, öljy 3092, ... mistä sähkö? kaikki kulutus sinne
+            // ks. Excelistä..
+
+
             return 0;
         }
 
