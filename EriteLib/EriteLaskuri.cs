@@ -11,6 +11,9 @@ namespace EriteLib
 
         private TaloAttributes _attrs;
         private Dictionary<int, double> _Qvuotoilmat;
+        // ILP SPF-luku
+        private const double ILP_COP = 2.8;
+        // TODO: VILP taulukko 12. "Energiatodistusasetus 2018 liitteineen.pdf"
 
         public EriteLaskuri()
         {
@@ -375,6 +378,74 @@ namespace EriteLib
             return Qlamm_tilat_netto;
         }
 
+        public double Kohta8VaraavaTulisijaJaILPPerVuosi()
+        {
+            var ostoUuni = Kohta8VaraavaTulisijaPerVuosi();
+            var ostoILP = Kohta8ILPPerVuosi();
+            return ostoUuni + ostoILP;
+        }
+
+        internal double Kohta8VaraavaTulisijaPerVuosi()
+        {
+            // TODO: add varaava tulisija into house attrs
+
+            // VTT määritelmä varaavalle tulisijalle, std SFS-EN 15250
+            // t_tulisijanpinta - t_ymparisto = 100 % -> min. 4 h -> 50 %
+
+            // CE-merkinta ja valmistajan ilmoittama hyotysuhde
+            var coeff = 0.6; //< TODO: asetus, tai valmistajan arvo
+
+            // Tulisijan max.energian luovutus
+            var MaxOutput = 3000d; // vakio. vuodessa!
+            // -> ostoenergian maara
+            var ostoEn = MaxOutput / coeff; // kWh
+            Debug.WriteLine($"[ERITE] Tulisijan ostoenergian maara: {ostoEn} kWh");
+            return ostoEn;
+        }
+
+        internal double Kohta8ILPPerVuosi()
+            {
+                // ILP:stä,  1048/2017
+                // taulukko rakennusvuosi, max teho, max teho per neliot
+
+                // rakennuslupa vireille 2 vuotta ennen valmistumista (nyt saatiin vm. 2004)
+                // ILP max luovutus tilaan 3000 kWh (TODO: taulukosta 15)
+                var ILPMaxOutput = 3000d;
+            var ostoSahko = ILPMaxOutput / ILP_COP;
+            Debug.WriteLine($"[ERITE] ILP ostoenergian maara: {ostoSahko} kWh");
+
+            // Ei riita. Energiankulutuksen laskentaohjeet luvut 6-7
+
+            return ostoSahko;
+        }
+
+        public double Kohta9LammitysjarjestelmanEnergiankulutus(int kk=1)
+        {
+            var latt_tilat_brutto = Kohta7LampokuormienHyodyntaminen(kk);
+            var tulisija = 3000d; //< TODO: naa maksimit tuli vuosiluvun mukaan
+            var ILP = 3000d;
+            var QLamm_tilat_netto = latt_tilat_brutto - tulisija * (DaysInMonth(kk) / 365d) - ILP * (DaysInMonth(kk) / 365d);
+            Debug.WriteLine($"[ERITE] lamm_tilat_netto: {QLamm_tilat_netto} kWh");
+
+            // Tilojen lammonjakojarjestelman lampoenergian tarve
+            // - vesikiertoisen lattialammityksen vuosihyotysuhde (Taulukko 6.1)
+            var eff_ll = 0.8; // TODO: taulukosta, asetuksiin lammonjaon tyyppi tjms. luokka
+
+            var Qlammitys_tilat = QLamm_tilat_netto / eff_ll;
+            Debug.WriteLine($"[ERITE] Kattilasta tarvitaan lattialampoon: {Qlammitys_tilat} kWh");
+
+            // Oljykattilan ostoenergian tarve
+            var eff_oljy = 0.81; // TODO. parameterize by lammitysmuoto
+            var Qvesi = LKVTarve();
+            var Qlammitys_oljy = (Qlammitys_tilat + Qvesi) / eff_oljy;
+            // Varaavan tulisijan ostoenergian tarve
+            var Quuni = Kohta8VaraavaTulisijaPerVuosi() * (DaysInMonth(kk) / 365d);
+            // ILP ostoenergia tassa kuussa
+            var QILP = Kohta8ILPPerVuosi() * (DaysInMonth(kk) / 365d);
+            Debug.WriteLine($"[ERITE] Ostoenergia Oljy: {Qlammitys_oljy} kWh, uuni {Quuni} kWh, ILP: {QILP}");
+
+            return 0;
+        }
 
         // m3/h*m2
         private double GetQ50(double n50, double alaVaippaKaikki, int ilmatilavuus)
