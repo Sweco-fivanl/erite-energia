@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace EriteLib
@@ -9,6 +10,7 @@ namespace EriteLib
     {
 
         private TaloAttributes _attrs;
+        private Dictionary<int, double> _Qvuotoilmat;
 
         public EriteLaskuri()
         {
@@ -25,11 +27,19 @@ namespace EriteLib
 
                 }
             };
+
+            _Qvuotoilmat = new Dictionary<int, double>(12);
+
+            // TODO: get by paikkakunta
+            _OutdoorTemp = new Dictionary<int, double>
+            {
+                {1, -3.97 }// tampere
+            };
         }
 
         //private double _tuloilmavirta;
 
-        private const double OutdoorTempJanuary = -3.97; // tampere
+        private readonly Dictionary<int, double> _OutdoorTemp;// = 
 
         //private const int HoursInMonth
         public int LaskeJotain()
@@ -70,7 +80,7 @@ namespace EriteLib
         private const double IlmanTiheys = 1.2; // kg/m3
         private const double IlmanOmLampKap = 1000; // J/kg*K
 
-        public double VuotoilmanLammitysenergia()
+        public double VuotoilmanLammitysenergia(int kk=1)
         {
             var n50 = 4.0; // TODO: taulukosta, 1/h, per vuosikymmen
             var ikkunaAla = 24.4;
@@ -85,10 +95,11 @@ namespace EriteLib
             Debug.WriteLine($"[ERITE] qv, vuotoilma: {qv_vuotoilma} m3/s");
 
             var att_Ts = _attrs.InTemp;
-            var att_Tu = OutdoorTempJanuary;
+            var att_Tu = _OutdoorTemp[kk];
 
 
-            var Q_vuotoilma = (IlmanTiheys * IlmanOmLampKap * qv_vuotoilma * (att_Ts - att_Tu) * HoursInMonth(1)) / 1000;
+            var Q_vuotoilma = (IlmanTiheys * IlmanOmLampKap * qv_vuotoilma * (att_Ts - att_Tu) * HoursInMonth(kk)) / 1000;
+            _Qvuotoilmat[kk] = Q_vuotoilma;
 
             return Q_vuotoilma;
         }
@@ -99,7 +110,7 @@ namespace EriteLib
         }
 
         // kerroin sähkö ??
-        internal double IVNettotarvePartial()
+        internal double IVNettotarvePartial(int kk=1)
         {
             // TODO: lähtöarvo, tulo-poisto tasapaino
             // todo: kuukausittaiset keskilämpötilat, per asuinpaikka
@@ -111,7 +122,7 @@ namespace EriteLib
             // TODO: kerro 24/7 arvolla
             Debug.WriteLine($"[ERITE] poistoilmavirta: {poistoilmavirta} m3/s");
             var T_sisa = _attrs.InTemp;
-            var T_ulko = OutdoorTempJanuary;
+            var T_ulko = _OutdoorTemp[kk];
             // TODO: 30 % taulukkoarvo, riippuu vuosiluvusta
             //       voi olla myös painovoimainen, nolla
             var scop = _attrs.Ventilation.LTO_COP ?? 0.30;
@@ -133,7 +144,7 @@ namespace EriteLib
             var T_sp = _attrs.Ventilation.KorvausilmanLampo; // sisään puhallettava ilma e.g. 18'C
             var dT_puh = 0;//T_sisa - T_sp;
             var Q_iv = runFact * weeFact * IlmanTiheys * IlmanOmLampKap * tuloilmavirta*((T_sp - dT_puh) - T_lto) *
-                       HoursInMonth(1) / 1000;
+                       HoursInMonth(kk) / 1000;
             Debug.WriteLine($"[ERITE] Ilmanvaihdon lamm. nettotarve: {Q_iv} kWh.");
 
             // Kaava 3.14
@@ -154,16 +165,16 @@ namespace EriteLib
 
         
         // kerroin öljy
-        internal double IVTuloilmanLammittaminen()
+        internal double IVTuloilmanLammittaminen(int kk=1)
         {
             var T_sisa = _attrs.InTemp;
             //var T_sisaan = _attrs.Ventilation.KorvausilmanLampo;
-            var T_ulko = OutdoorTempJanuary;
+            var T_ulko = _OutdoorTemp[kk];
             //var dT_vent = T_sisa - T_sisaan;
             var tuloilmavirta = GetPoistoIlmaVirta();
 
             var Q_iv_korv = IlmanTiheys * IlmanOmLampKap * tuloilmavirta * (T_sisa - T_ulko) *
-                       HoursInMonth(1) / 1000;
+                       HoursInMonth(kk) / 1000;
             Debug.WriteLine($"[ERITE] Korvausilman lämpenemisen lämpöenergian tarve: {Q_iv_korv} kWh.");
             return Q_iv_korv;
         }
@@ -232,7 +243,7 @@ namespace EriteLib
             return result1 + result2 + result3 + result4;
         }
 
-        public double ValaistusJaKulutussahko()
+        public double ValaistusJaKulutussahko(int kk=1)
         {
             // Valaistuksen ja kuluttajalaitteiden sähkönkulutus
             // 11§ Rakennuksen vakioitu käyttö
@@ -244,7 +255,7 @@ namespace EriteLib
             var kulutt = 3; // W/m2
             var kul_KA = 0.6; // käyttöaste
 
-            var tunnit = HoursInMonth(1);
+            var tunnit = HoursInMonth(kk);
 
             var kwhs = _attrs.Area * (valaisuts * val_KA + kulutt * kul_KA) * tunnit / 1000;
             Debug.WriteLine($"[ERITE] valaistus ja käyttösähkö: {kwhs} kWh.");
@@ -280,6 +291,65 @@ namespace EriteLib
             var kwht = havioTeho * HoursInMonth(1) / 1000;
             Debug.WriteLine($"[ERITE] LKV kierto häviö: {havioTeho} W, {kwht} kWh.");
             return kwht;
+        }
+
+        public double Kohta6IkkunoidenKauttaTulevaSateilyEnergia(int kk=1)
+        {
+            var gKoht = Constants.GKohtisuoraOletus;
+            var g = 0.9 * gKoht;
+            var fLapaisy = Constants.FLapaisyOletus;
+
+            var gSateilyPysty = 12.9; // TODO: taulukko s.18/19 (ETELA)
+            var ikkunaAlaEtela = 11.1;
+
+            // (KAAVA 5.4
+            // TODO: ikkunan
+            var Qaur = gSateilyPysty * fLapaisy * ikkunaAlaEtela * g;
+            Debug.WriteLine($"[ERITE] Ikkuna lämpökuorma etelä: {Qaur} kWh.");
+            // TODO: joka ilmansuuntaan joka kuukaudelle
+
+            return Qaur; // + muut suunnat
+        }
+
+        public double Kohta7LampokuormienHyodyntaminen(int kk=1)
+        {
+            // johtumishäviöt, tammikuu (kts. Excel)
+            var Qjoht = /*Qylapohja + Qikk + Qovet + Qulkoseina + Qalapohja*/ 1948.0;
+
+            // Olemassa olevan rakennuksen yhteydessä voidaan laskea 10% johtumishäviöstä
+            // kylmäsilloille. Uudiskohteelle lasketaan reunaviivat tms.
+            var kylmasilta = 0.10 * Qjoht;
+
+            // Lasketaan (kaava 3.2) Qtila = Qjoht + Qvuotoilma + Qiv,tuloilma + Qiv,korvausilma
+            var Qvuoto = _Qvuotoilmat[kk];// 271d; // tODO: tallenna välitulos per kuukausi
+            var QivTulo = 157d; // TODO: ^^sama
+            var QivKorvaus = 0d; //< todo: onko se tulo tai korvaus
+            var Qtila = Qjoht + kylmasilta + Qvuoto + QivTulo + QivKorvaus;
+
+            // Note. tuloilma tulee iv koneesta
+            //       korvausilma tulee ikkunan raosta tai tuloilmaventtiilista
+
+            // Rakennuksen tilojen ominaislampohavio
+            double Htila = 0d;
+            try
+            {
+                Htila = Qtila / ((_attrs.InTemp - _OutdoorTemp[kk]) * HoursInMonth(kk)) * 1000;
+            }
+            catch (DivideByZeroException)
+            {
+                // ignored
+            }
+
+
+            // valitaan Crak = 70 Wh/m2K (taulukko 5.6)
+            var Crak = 70d;
+            // Rakennuksen aikavakio
+            var Tau = (Crak * _attrs.Area) / (Htila);
+            Debug.WriteLine($"[ERITE] Aikavakio: {Tau} h");
+
+
+
+            return 0;
         }
 
         // m3/h*m2

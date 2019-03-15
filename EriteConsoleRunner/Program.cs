@@ -22,6 +22,8 @@ namespace EriteConsoleRunner
             Console.WriteLine($"e IV sahkoenergia: {test.Kohta5LVIPumputSahkontarve()} kWh");
             Console.WriteLine($"e muu sahkoenergia: {test.ValaistusJaKulutussahko()} kWh");
             Console.WriteLine($"ihmis liha energia: {test.LampokuormaHenkiloista()} kWh");
+            Console.WriteLine($"Ikkunoiden lampokuorma: {test.Kohta6IkkunoidenKauttaTulevaSateilyEnergia()} kWh");
+            Console.WriteLine($"Lampokuormien hyodyntaminen: {test.Kohta7LampokuormienHyodyntaminen()} kWh");
 
             
         }
