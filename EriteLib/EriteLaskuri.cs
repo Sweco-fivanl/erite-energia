@@ -35,6 +35,7 @@ namespace EriteLib
             {
                 {1, -3.97 }// tampere
             };
+            Debug.WriteLine($"[ERITE] _________uusi laskelma___________");
         }
 
         //private double _tuloilmavirta;
@@ -262,21 +263,22 @@ namespace EriteLib
             return kwhs;
         }
 
-        public double LampokuormaHenkiloista()
+        public double LampokuormaHenkiloista(int kk=1)
         {
             //
             var factor = 0.6;
             var power = 2; // W
-            var kwhs = factor * power * _attrs.Area * HoursInMonth(1) / 1000;
+            var kwhs = factor * power * _attrs.Area * HoursInMonth(kk) / 1000;
             Debug.WriteLine($"[ERITE] ihmisenergia: {kwhs} kWh.");
             return kwhs;
         }
 
-        internal double LKVKierto()
+        internal double LKVKierto(int kk=1)
         {
             var ala = _attrs.Area;
 
             // Kiertojohdon pituus taulukosta 6.7
+            // TODO: to talo attributes
             var Llkv_omin = 0.2; // Kiertojohdon ominaispituus: Llkv, omin, m / m2
             // kiertojohdon eristys (taulukko 6.6)
             var Llkv_havio = 15; // kv, kiertohäviö, omin, W / m
@@ -288,7 +290,7 @@ namespace EriteLib
             //Debug.WriteLine($"[ERITE] LKV kierto häviö: {havioTeho} W.");
 
             // kiertojohdon häviö tammikuussa
-            var kwht = havioTeho * HoursInMonth(1) / 1000;
+            var kwht = havioTeho * HoursInMonth(kk) / 1000;
             Debug.WriteLine($"[ERITE] LKV kierto häviö: {havioTeho} W, {kwht} kWh.");
             return kwht;
         }
@@ -342,15 +344,37 @@ namespace EriteLib
 
 
             // valitaan Crak = 70 Wh/m2K (taulukko 5.6)
-            var Crak = 70d;
+            var Crak = 70d; // TODO: katso taulukosta
             // Rakennuksen aikavakio
             var Tau = (Crak * _attrs.Area) / (Htila);
             Debug.WriteLine($"[ERITE] Aikavakio: {Tau} h");
+            // suhdeluku gamma (kaava 5.4)
 
+            // Lämpökuormat tammikuussa:
+            // - henkilöt, 131,2 kWh
+            // - valaistus+sähkö, 263 kWh
+            // - lämp.veden kierto 328 kWh (kts. 1010/2017, 18§) kerroin!
+            // - aurinko ikkunoista
+            var henkilot = LampokuormaHenkiloista(kk);
+            var valaistus = ValaistusJaKulutussahko(kk);
+            var kierto = 1.5 * LKVKierto(kk);
+            var aurinko = Kohta6IkkunoidenKauttaTulevaSateilyEnergia(kk);
 
+            var lampoKuorma = henkilot + valaistus + kierto + aurinko;
 
-            return 0;
+            // Lampokuorman suhde lampohavioon
+            var gamma = lampoKuorma / 2571d; // (5.14)
+            // Numeerinen parametri a
+            var a = 1 + Tau / 15; // (5.13)
+            // lämpökuorman hyödyntämisaste tassa kuussa
+            var nlampo = (1 + Math.Pow(gamma, a)) / (1 + Math.Pow(gamma, a + 1));
+            Debug.WriteLine($"[ERITE] Lampokuorman hyodyntamisaste kk: {kk}, arvo: {nlampo}");
+
+            var Qlamm_tilat_netto = 2571d - nlampo * 616.2; //< todo mitanaaoli? 
+
+            return Qlamm_tilat_netto;
         }
+
 
         // m3/h*m2
         private double GetQ50(double n50, double alaVaippaKaikki, int ilmatilavuus)
