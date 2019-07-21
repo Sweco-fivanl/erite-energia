@@ -25,15 +25,33 @@ namespace EriteLib
         {
             get
             {
-                if (null == Kerrokset) _kerrokset = new List<MateriaaliKerros>();
+                if (null == _kerrokset) _kerrokset = new List<MateriaaliKerros>();
                 return _kerrokset;
             }
         }
+        public void LisaaKerros(double lambda, double d)
+        {
+            Kerrokset.Add(new MateriaaliKerros { Materiaali = new Materiaali { Lambda = lambda, Thickness = d } });
+        }
+
+        public void LisaaKerros(double lambda, double d, double kylmaLambda, double osuus)
+        {
+            Kerrokset.Add(new MateriaaliKerros
+            {
+                Materiaali = new Materiaali { Lambda = lambda, Thickness = d },
+                Kylmasilta = new Kylmasilta
+                {
+                    Aine = new Materiaali { Lambda = kylmaLambda, Thickness = d },
+                    Osuus = osuus
+                }
+            });
+        }
+
         public double Laske_U()
         {
             // yla- ja alalikiarvot
-            var RTa = 0d;
-            var RTb = 0d;
+            var RTa = Rsi; // pintavastus
+            var RTb = Rsi;
             var bOsuus = 0d;
             bool kylmasiltoja = false;
 
@@ -52,19 +70,21 @@ namespace EriteLib
                     RTb += mat.Materiaali.GetR();
                 }
             }
-            var fi_RTa = RTa * (1 - bOsuus);
-            var fi_RTb = RTb * bOsuus;
+            RTa += Rse;
+            RTb += Rse;
+            var fi_RTa = (1 - bOsuus) / RTa;
+            var fi_RTb = bOsuus / RTb;
             var RTinv = fi_RTa + fi_RTb;
             var ylalikiarvo_RT = 1 / RTinv;
             Debug.WriteLine($"[ERITE] Ylalikiarvo R'T: {ylalikiarvo_RT} m2K/W");
 
-            var RppT = 0d;
+            var RppT = Rsi; // pintavastus
             foreach (var mat in Kerrokset)
             {
                 if (mat.Kylmasilta != null)
                 {
-                    var f1_R1 = mat.Materiaali.GetR() * (1 - mat.Kylmasilta.Osuus);
-                    var f2_R2 = mat.Kylmasilta.Aine.GetR() * mat.Kylmasilta.Osuus;
+                    var f1_R1 = (1 - mat.Kylmasilta.Osuus) / mat.Materiaali.GetR();
+                    var f2_R2 = mat.Kylmasilta.Osuus / mat.Kylmasilta.Aine.GetR();
                     RppT += 1 / (f1_R1 + f2_R2);
                 }
                 else
@@ -72,6 +92,7 @@ namespace EriteLib
                     RppT += mat.Materiaali.GetR();
                 }
             }
+            RppT += Rse; // ulkopinta
             Debug.WriteLine($"[ERITE] Alalikiarvo R\"T: {RppT} m2K/W");
 
             var ylaAlaKarvo = (ylalikiarvo_RT + RppT) / 2;
@@ -102,7 +123,7 @@ namespace EriteLib
         public Materiaali Aine { get; set; }
         public double Osuus {
             get {
-                if (_osuus >= 0 && _osuus <= 1) return Osuus;
+                if (_osuus >= 0 && _osuus <= 1) return _osuus;
                 return 0;
             }
             

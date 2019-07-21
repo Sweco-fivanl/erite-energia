@@ -25,8 +25,16 @@ namespace EriteConsoleRunner
             Console.WriteLine($"Lammitys tarve netto: {test.Kohta7LampokuormienHyodyntaminen()} kWh");
             Console.WriteLine($"Tulisija ja ILP: {test.Kohta8VaraavaTulisijaJaILPPerVuosi()} kWh");
             Console.WriteLine($"Lammitysjarjestelman energiankulutus: {test.Kohta9LammitysjarjestelmanEnergiankulutus()} kWh");
-            
 
+
+            // testaa uu-arvoja
+            var kerrosRakenne = new KerrosRakenne();
+            kerrosRakenne.LisaaKerros(0.21, 0.013); // EK
+            kerrosRakenne.LisaaKerros(0.033, 0.15, 0.12, 0.083); // villa + puu
+            kerrosRakenne.LisaaKerros(0.031, 0.05); // TS
+            kerrosRakenne.LisaaKerros(0.04/0.130, 0.04); // ilmarako (R annettu 0.130)
+            kerrosRakenne.LisaaKerros(0.5, 0.085); // tiili
+            Console.WriteLine($"Uc: {String.Format("{0:0.##}", kerrosRakenne.Laske_U())} W/m2K");
 
             var mabReader = new EriteLib.MabReader();
             var byteArray = new byte[] { 0x05, 0x2B, 0x00, 0x00, 0x65, 0x00, 0x00, 0x00, 0xAC, 0x08, 0x00, 0x00, 0x25, 0x00, 0x07, 0x00, 0x42, 0x65, 0x74, 0x6F, 0x6E, 0x69, 0x00 };
