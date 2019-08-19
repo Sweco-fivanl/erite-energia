@@ -34,7 +34,7 @@ namespace EriteLib
             P, Ko, I, Ka, E, Lo, L, Lu
         }
 
-        enum KK
+        internal enum KK
         {
             Tammikuu  = 1,
             Helmikuu  = 2,
@@ -49,6 +49,25 @@ namespace EriteLib
             Marraskuu = 11,
             Joulukuu  = 12
         }
+
+        // Rakennuksen energiankulutuksen ja lämmitystehontarpeen laskenta 20122017 vain korostukset.PDF
+        // Sivu 20, Taulukko 3.4
+        // "Alapohjan alapuolisen maan kuukausittaisen keskilämpötilan ja vuotuisen keskilämpötilan ero."
+        internal static readonly Dictionary<KK, int> dT_maa = new Dictionary<KK, int>
+        {
+            { KK.Tammikuu, 0},
+            { KK.Helmikuu , -1},
+            { KK.Maaliskuu, -2},
+            { KK.Huhtikuu , -3},
+            { KK.Toukokuu , -3},
+            { KK.Kesäkuu  , -2},
+            { KK.Heinäkuu , 0},
+            { KK.Elokuu   , 1},
+            { KK.Syyskuu  , 2},
+            { KK.Lokakuu  , 3},
+            { KK.Marraskuu, 3},
+            { KK.Joulukuu , 2}
+        };
 
         /*
         static readonly Dictionary<int, Dictionary<Ilmansuunta, double>> SateilyPysty = new Dictionary<int, Dictionary<Ilmansuunta, double>>

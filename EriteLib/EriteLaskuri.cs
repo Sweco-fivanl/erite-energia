@@ -62,7 +62,7 @@ namespace EriteLib
 
 
         // TODO: kuukausi
-        public Dictionary<int, double> MaanvaraisenLaatanJohtumishavio()
+        public double MaanvaraisenLaatanJohtumishavio()
         {
             var Tu_vuosi = 5.57;
             var dTmaa_vuosi = 5.0;
@@ -70,9 +70,11 @@ namespace EriteLib
             Debug.WriteLine($"[ERITE] vuotuinen keskilampo: {vuotuinen_keskilampo}");
 
             Dictionary<int, double> Quut = new Dictionary<int, double>(12);
-            foreach (var index in Range(1, 1 /*2*/))
+            //foreach (var index in Range(1, 1 /*2*/))
+            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
             {
-                var Tmaa_tammikuu = vuotuinen_keskilampo + 0;
+                //var Tmaa_tammikuu = vuotuinen_keskilampo + 0;
+                var Tmaa_kuukausi = vuotuinen_keskilampo + Constants.dT_maa[kuukausi];
 
                 var Q = 0d;
                 foreach (var alaPohja in _attrs.Alapohjat)
@@ -82,13 +84,14 @@ namespace EriteLib
 
                     var pAla = alaPohja.Area;
                     var sisalampo = alaPohja.InTemp ?? _attrs.InTemp; // TODO: overridable attribute
-                    Q += (Uarvo * pAla * (sisalampo - Tmaa_tammikuu) * HoursInMonth(1)) / 1000;
+                    Q += (Uarvo * pAla * (sisalampo - Tmaa_kuukausi) * HoursInMonth(1)) / 1000;
                 }
                 // kaikki alapohjat yhteensa
-                Quut.Add(index, Q);
+                Quut.Add((int)kuukausi, Q);
+                Debug.WriteLine($"[ERITE] Alapohjan johtumishavio {kuukausi.ToString()}: {Q} kWh");
             }
 
-            return Quut;
+            return Quut.Values.Sum();
         }
 
         // 11§ Rakennuksen vakioitu kaytto

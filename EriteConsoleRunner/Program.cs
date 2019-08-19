@@ -24,7 +24,7 @@ namespace EriteConsoleRunner
             test.SetConfig(json);
             Console.WriteLine($"test: {test.LaskeJotain()}");
 
-            Console.WriteLine($"Maanvaraisen laatan johtumishavio: {test.MaanvaraisenLaatanJohtumishavio().FirstOrDefault().Value}");
+            Console.WriteLine($"Maanvaraisen laatan johtumishavio: {test.MaanvaraisenLaatanJohtumishavio()} kWh/a");
             Console.WriteLine($"Vuotoilman lammitysenergia: {test.VuotoilmanLammitysenergia()} kWh");
             Console.WriteLine($"e IV Nettotarve: {test.IVBrutto()} kWh");
             //Console.WriteLine($"e KV Nettotarve: {test.KayttoVedenVakioituKaytto()} kWh/v");
