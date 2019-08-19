@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.IO;
 using EriteLib;
+using Newtonsoft.Json;
 
 namespace EriteConsoleRunner
 {
@@ -11,9 +12,19 @@ namespace EriteConsoleRunner
         static void Main(string[] args)
         {
             var test = new EriteLib.EriteLaskuri();
+            // deserialize JSON directly from a file
+            TaloAttributes json;
+            using (StreamReader file = File.OpenText(@"..\..\test_data\harjoitustalo.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                json = (TaloAttributes)serializer.Deserialize(file, typeof(TaloAttributes));
+            }
+            //var json = serializer.Deserialize<TaloAttributes>(File.ReadAllText(@"..\..\test_data\harjoitustalo.json"));
+            //JObject o1 = JObject.Parse
+            test.SetConfig(json);
             Console.WriteLine($"test: {test.LaskeJotain()}");
 
-            Console.WriteLine($"Maanvaraisen laatan johtumishavio: {test.MaanvaraisenLaatanJohtumishavio()}");
+            Console.WriteLine($"Maanvaraisen laatan johtumishavio: {test.MaanvaraisenLaatanJohtumishavio().FirstOrDefault().Value}");
             Console.WriteLine($"Vuotoilman lammitysenergia: {test.VuotoilmanLammitysenergia()} kWh");
             Console.WriteLine($"e IV Nettotarve: {test.IVBrutto()} kWh");
             //Console.WriteLine($"e KV Nettotarve: {test.KayttoVedenVakioituKaytto()} kWh/v");

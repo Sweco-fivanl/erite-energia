@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using static System.Linq.Enumerable;
+//using System.IO.FileSystem;
 
 namespace EriteLib
 {
@@ -17,6 +19,21 @@ namespace EriteLib
 
         public EriteLaskuri()
         {
+
+            _Qvuotoilmat = new Dictionary<int, double>(12);
+
+            // TODO: get by paikkakunta
+            _OutdoorTemp = new Dictionary<int, double>
+            {
+                {1, -3.97 }// tampere
+            };
+            Debug.WriteLine($"[ERITE] _________uusi laskelma___________");
+        }
+
+        public void SetConfig(TaloAttributes attributes)
+        {
+            _attrs = attributes;
+            /*
             _attrs = new TaloAttributes
             {
                 Area = 147.0, // m2
@@ -30,15 +47,7 @@ namespace EriteLib
 
                 }
             };
-
-            _Qvuotoilmat = new Dictionary<int, double>(12);
-
-            // TODO: get by paikkakunta
-            _OutdoorTemp = new Dictionary<int, double>
-            {
-                {1, -3.97 }// tampere
-            };
-            Debug.WriteLine($"[ERITE] _________uusi laskelma___________");
+            */
         }
 
         //private double _tuloilmavirta;
@@ -53,23 +62,33 @@ namespace EriteLib
 
 
         // TODO: kuukausi
-        public double MaanvaraisenLaatanJohtumishavio()
+        public Dictionary<int, double> MaanvaraisenLaatanJohtumishavio()
         {
             var Tu_vuosi = 5.57;
             var dTmaa_vuosi = 5.0;
             var vuotuinen_keskilampo = Tu_vuosi + dTmaa_vuosi;
             Debug.WriteLine($"[ERITE] vuotuinen keskilampo: {vuotuinen_keskilampo}");
 
-            var Tmaa_tammikuu = vuotuinen_keskilampo + 0;
-            var Uarvo = 0.24;
-            // TODO: rossipohjalle U-kerroin 0.9
+            Dictionary<int, double> Quut = new Dictionary<int, double>(12);
+            foreach (var index in Range(1, 1 /*2*/))
+            {
+                var Tmaa_tammikuu = vuotuinen_keskilampo + 0;
 
-            var pAla = _attrs.Area;
-            var sisalampo = _attrs.InTemp;
-            var Q = (Uarvo * pAla * (sisalampo - Tmaa_tammikuu) * HoursInMonth(1) ) /1000;
+                var Q = 0d;
+                foreach (var alaPohja in _attrs.Alapohjat)
+                {
+                    var Uarvo = alaPohja.UArvo;
+                    // TODO: rossipohjalle U-kerroin 0.9
 
+                    var pAla = alaPohja.Area;
+                    var sisalampo = alaPohja.InTemp ?? _attrs.InTemp; // TODO: overridable attribute
+                    Q += (Uarvo * pAla * (sisalampo - Tmaa_tammikuu) * HoursInMonth(1)) / 1000;
+                }
+                // kaikki alapohjat yhteensa
+                Quut.Add(index, Q);
+            }
 
-            return Q;
+            return Quut;
         }
 
         // 11§ Rakennuksen vakioitu kaytto
@@ -110,7 +129,7 @@ namespace EriteLib
 
         private double GetPoistoIlmaVirta()
         {
-            return _attrs.Area * _attrs.Ventilation.Ulkoilmavirta / 1000; // dm3 -> m3
+            return _attrs.NetArea * _attrs.Ventilation.Ulkoilmavirta / 1000; // dm3 -> m3
         }
 
         // kerroin sähkö ??
@@ -188,7 +207,7 @@ namespace EriteLib
 
         internal double KayttoVedenVakioituKaytto()
         {
-            var ala = _attrs.Area;
+            var ala = _attrs.NetArea;
             // lämpimän käyttöveden tarve vuodessa
 
             var tarve = ala * Hattu;
@@ -231,12 +250,12 @@ namespace EriteLib
             // vesikiertoisen lattialämmityksen sähkönkulutus
             // taulukko 9
             var mikaIhme = 2.5; // kWh/m2-v 
-            var result2 = _attrs.Area * mikaIhme * (DaysInMonth(1) / 365.0);
+            var result2 = _attrs.NetArea * mikaIhme * (DaysInMonth(1) / 365.0);
             Debug.WriteLine($"[ERITE] LL sähköenergia: {result2} kWh.");
 
             // öljylämmityksen sähköntarvei (taulukko 10)
             var whot = 0.99; //kWh/m2/vuosi
-            var result3 = _attrs.Area * (DaysInMonth(1) / 365.0);
+            var result3 = _attrs.NetArea * (DaysInMonth(1) / 365.0);
             Debug.WriteLine($"[ERITE] ÖP sähköenergia: {result3} kWh.");
 
             // lämpimän käyttöveden kiertopumpun sähkönkulutus (kaava 6.7)
@@ -261,7 +280,7 @@ namespace EriteLib
 
             var tunnit = HoursInMonth(kk);
 
-            var kwhs = _attrs.Area * (valaisuts * val_KA + kulutt * kul_KA) * tunnit / 1000;
+            var kwhs = _attrs.NetArea * (valaisuts * val_KA + kulutt * kul_KA) * tunnit / 1000;
             Debug.WriteLine($"[ERITE] valaistus ja käyttösähkö: {kwhs} kWh.");
             return kwhs;
         }
@@ -271,14 +290,14 @@ namespace EriteLib
             //
             var factor = 0.6;
             var power = 2; // W
-            var kwhs = factor * power * _attrs.Area * HoursInMonth(kk) / 1000;
+            var kwhs = factor * power * _attrs.NetArea * HoursInMonth(kk) / 1000;
             Debug.WriteLine($"[ERITE] ihmisenergia: {kwhs} kWh.");
             return kwhs;
         }
 
         internal double LKVKierto(int kk=1)
         {
-            var ala = _attrs.Area;
+            var ala = _attrs.NetArea;
 
             // Kiertojohdon pituus taulukosta 6.7
             // TODO: to talo attributes
@@ -349,7 +368,7 @@ namespace EriteLib
             // valitaan Crak = 70 Wh/m2K (taulukko 5.6)
             var Crak = 70d; // TODO: katso taulukosta
             // Rakennuksen aikavakio
-            var Tau = (Crak * _attrs.Area) / (Htila);
+            var Tau = (Crak * _attrs.NetArea) / (Htila);
             Debug.WriteLine($"[ERITE] Aikavakio: {Tau} h");
             // suhdeluku gamma (kaava 5.4)
 
