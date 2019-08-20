@@ -13,6 +13,7 @@ namespace EriteLib
         public List<Ikkuna> Ikkunat { get; set; }
         public double InTemp { get; set; }
         public double NetArea { get; set; }
+        public int NetVolume { get; set; }
         public Ventilation Ventilation { get; set; }
     }
 

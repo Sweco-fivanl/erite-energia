@@ -69,6 +69,26 @@ namespace EriteLib
             { KK.Joulukuu , 2}
         };
 
+        // Lämmityste-hon tarve lasketaan paikkakunnan mitoittavalla ulkoilman
+        // lämpötilalla, joka on esitetty energiatehokkuus-asetuksen liitteessä 1.
+        // "Energiatodistusasetus 2018 liitteineen.pdf" -> "Julkaistu energiamääräys 2017.pdf"
+        // säävyöhyke I, Helsinki-Vantaa
+        internal static readonly Dictionary<KK, double> Tu_Vyohyke_I = new Dictionary<KK, double>
+        {
+            { KK.Tammikuu , -3.97},
+            { KK.Helmikuu , -4.50},
+            { KK.Maaliskuu, -2.58},
+            { KK.Huhtikuu ,  4.50},
+            { KK.Toukokuu , 10.76},
+            { KK.Kesäkuu  , 14.23},
+            { KK.Heinäkuu , 17.30},
+            { KK.Elokuu   , 16.05},
+            { KK.Syyskuu  , 10.53},
+            { KK.Lokakuu  ,  6.20},
+            { KK.Marraskuu,  0.50},
+            { KK.Joulukuu , -2.19}
+        };
+
         /*
         static readonly Dictionary<int, Dictionary<Ilmansuunta, double>> SateilyPysty = new Dictionary<int, Dictionary<Ilmansuunta, double>>
         {

@@ -63,6 +63,7 @@
   ],
   "inTemp": 21.0,
   "NetArea": 147.0,
+  "NetVolume": 382,
   "ventilation": {
     "runningHours": 24,
     "ulkoilmavirta": 0.4,
