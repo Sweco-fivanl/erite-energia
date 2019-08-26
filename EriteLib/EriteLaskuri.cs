@@ -13,7 +13,7 @@ namespace EriteLib
 
         private TaloAttributes _attrs;
         private Dictionary<Constants.KK, double> _Qvuotoilmat;
-        private Dictionary<Constants.KK, double> _Q_iv_korvausilma_vuodelle; // lammitys kWh
+        //private Dictionary<Constants.KK, double> _Q_iv_korvausilma_vuodelle; // lammitys kWh
         private Dictionary<Constants.KK, double> _OutdoorTemp;
 
         // ILP SPF-luku
@@ -56,24 +56,36 @@ namespace EriteLib
 
 
         //private const int HoursInMonth
-        public int LaskeJotain()
+        public int LaskeELuku()
         {
-            return 0;
+            // laske nama taustalle
+            if (0 == _Qvuotoilmat.Count) VuotoilmanLammitysenergiaPerVuosi();
+
+            var eKulutus = 0d;
+            foreach (int kuukausi in Range(1, 12))
+            {
+                eKulutus += Kohta9LammitysjarjestelmanEnergiankulutus(kuukausi);
+            }
+            
+            Debug.WriteLine($"[ERITE] Kokonaisenergiankulutus yhteensa: {string.Format("{0:0.00}", eKulutus)} kWh_E)");
+            int eLuku = Convert.ToInt32(eKulutus / _attrs.NetArea);
+            return eLuku;
         }
 
 
         // TODO: kuukausi
-        public double MaanvaraisenLaatanJohtumishavio()
+        public double MaanvaraisenLaatanJohtumishavio(int kk)
         {
+            var kuukausi = kk.Kuukausi();
             var Tu_vuosi = 5.57;
             var dTmaa_vuosi = 5.0;
             var vuotuinen_keskilampo = Tu_vuosi + dTmaa_vuosi;
             Debug.WriteLine($"[ERITE] vuotuinen keskilampo: {vuotuinen_keskilampo}");
 
-            Dictionary<int, double> Quut = new Dictionary<int, double>(12);
+            //Dictionary<int, double> Quut = new Dictionary<int, double>(12);
             //foreach (var index in Range(1, 1 /*2*/))
-            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
-            {
+            //foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
+            //{
                 //var Tmaa_tammikuu = vuotuinen_keskilampo + 0;
                 var Tmaa_kuukausi = vuotuinen_keskilampo + Constants.dT_maa[kuukausi];
 
@@ -88,11 +100,11 @@ namespace EriteLib
                     Q += (Uarvo * pAla * (sisalampo - Tmaa_kuukausi) * HoursInMonth(kuukausi)) / 1000;
                 }
                 // kaikki alapohjat yhteensa
-                Quut.Add((int)kuukausi, Q);
+                //Quut.Add((int)kuukausi, Q);
                 Debug.WriteLine($"[ERITE] Alapohjan johtumishavio {kuukausi.ToString()}: {Q} kWh");
-            }
+            //}
 
-            return Quut.Values.Sum();
+            return Q;//Quut.Values.Sum();
         }
 
         // 11§ Rakennuksen vakioitu kaytto
@@ -108,7 +120,7 @@ namespace EriteLib
         private const double IlmanOmLampKap = 1000; // J/kg*K
 
         // 2.
-        public double VuotoilmanLammitysenergia()
+        public double VuotoilmanLammitysenergiaPerVuosi()
         {
             var n50 = 4.0; // TODO: taulukosta, 1/h, per vuosikymmen
             var ikkunaAla = _attrs.Ikkunat.Sum(i => i.Area);
@@ -142,13 +154,13 @@ namespace EriteLib
         }
 
         // kerroin sähkö ??
-        internal double IVNettotarvePartial()
+        internal double IVNettotarvePartial(int kk)
         {
             // TODO: lähtöarvo, tulo-poisto tasapaino
             // todo: kuukausittaiset keskilämpötilat, per asuinpaikka
             // jotain se höpötti painovoimainen vs. koneellinen
             // TODO: lähtöarvo, LTO:n vuosihyötysuhde
-
+            var kuukausi = kk.Kuukausi();
 
             var poistoilmavirta = GetPoistoIlmaVirta();
             // TODO: kerro 24/7 arvolla
@@ -161,9 +173,9 @@ namespace EriteLib
 
             var runFact = _attrs.Ventilation.RunningHours / 24;
 
-            var Q_iv_vuodelle = 0d;
-            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
-            {
+            //var Q_iv_vuodelle = 0d;
+            //foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
+            //{
                 var T_ulko = _OutdoorTemp[kuukausi];
 
                 // lämmöntalteenotolla talteenotettu teho (tammikuu) kaava 3.12
@@ -181,41 +193,44 @@ namespace EriteLib
                 var Q_iv = runFact * weeFact * IlmanTiheys * IlmanOmLampKap * tuloilmavirta * ((T_sp - dT_puh) - T_lto) *
                            HoursInMonth(kuukausi) / 1000;
                 Debug.WriteLine($"[ERITE] {kuukausi.ToString()} LTO talteenotettu teho: {theta} W, LTO temp: {T_lto} C, Ilmanvaihdon lamm. nettotarve: {Q_iv} kWh.");
-                Q_iv_vuodelle += Q_iv;
-            }
+            //    Q_iv_vuodelle += Q_iv;
+            //}
             // Kaava 3.14
             // 18C - 21C (öljylämmityksen kertoimella)
 
             // Q_iv (sähkön kertoimella)
-            return Q_iv_vuodelle;
+            return Q_iv;
+            //return Q_iv_vuodelle;
         }
 
-        public double IVBrutto()
+        public double IVBrutto(int kk)
         {
             // piti tulla 148
-            var kaikki = IVTuloilmanLammittaminen();
-            var lto = IVNettotarvePartial();
+            var kaikki = IVTuloilmanLammittaminen(kk);
+            var lto = IVNettotarvePartial(kk);
             return kaikki - lto;
         }
 
         
         // kerroin öljy
-        internal double IVTuloilmanLammittaminen()
+        internal double IVTuloilmanLammittaminen(int kk)
         {
+            var kuukausi = kk.Kuukausi();
             var T_sisa = _attrs.InTemp;
             //var T_sisaan = _attrs.Ventilation.KorvausilmanLampo;
             //var dT_vent = T_sisa - T_sisaan;
             var tuloilmavirta = GetPoistoIlmaVirta();
 
-            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
-            {
+            //foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
+            //{
                 var T_ulko = _OutdoorTemp[kuukausi];
                 var Q_iv_korv = IlmanTiheys * IlmanOmLampKap * tuloilmavirta * (T_sisa - T_ulko) *
                            HoursInMonth(kuukausi) / 1000;
                 Debug.WriteLine($"[ERITE] {kuukausi.ToString()} Korvausilman lämpenemisen lämpöenergian tarve: {Q_iv_korv} kWh.");
-                _Q_iv_korvausilma_vuodelle[kuukausi] = Q_iv_korv;
-            }
-            return _Q_iv_korvausilma_vuodelle.Sum(k => k.Value);
+            //    _Q_iv_korvausilma_vuodelle[kuukausi] = Q_iv_korv;
+            //}
+            return Q_iv_korv;
+            //return _Q_iv_korvausilma_vuodelle.Sum(k => k.Value);
         }
 
         private const int Hattu = 35; // kWh/m2-v
@@ -237,27 +252,29 @@ namespace EriteLib
 
         }
 
-        public double LKVTarve()
+        public double LKVTarve(int kk)
         {
+            var kuukausi = kk.Kuukausi();
             // TODO: kaava 6.5
             // laske energia...
             // TAulukko 6.4
             // siirron vuosihyötysuhde
             var taulukosta = 0.96;
             var varaajaHavio = 0;
-            var tot_kwht = 0d;
-            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
-            {
+            //var tot_kwht = 0d;
+            //foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
+            //{
                 var kiertoHavio = LKVKierto(kuukausi);
                 var kwht = (KayttoVedenVakioituKaytto() / taulukosta) * (DaysInMonth((int)kuukausi) / 365.0) + varaajaHavio + kiertoHavio;
-                tot_kwht += kwht;
+                //tot_kwht += kwht;
                 Debug.WriteLine($"[ERITE] {kuukausi.ToString()} LKV energia: {kwht} kWh.");
-            }
-            return tot_kwht;
+            //}
+            return kwht;
         }
 
-        public double Kohta5LVIPumputSahkontarve()
+        public double Kohta5LVIPumputSahkontarve(int kk)
         {
+            var kuukausi = kk.Kuukausi();
             // TODO: taulukko sähkökrääsää
 
             // IV:N sähkön kulutus
@@ -265,40 +282,24 @@ namespace EriteLib
             // Taulukko 3. Ilmanvaihtojärjestelmä - Rakennusluvan vireilletulovuosi
             var NominalPower = 2.5; // kW/m2/s (Taulukko 3)
             var tuloilmavirta = GetPoistoIlmaVirta();
-            var result1 = 0d;
-            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
-            {
-                result1 += tuloilmavirta * NominalPower * HoursInMonth(kuukausi);
-            }
-            Debug.WriteLine($"[ERITE] IV sähköenergia: {result1} kWh/a.");
+            var result1 = tuloilmavirta * NominalPower * HoursInMonth(kuukausi);
+            Debug.WriteLine($"[ERITE] IV sähköenergia: {result1} kWh.");
 
             // vesikiertoisen lattialämmityksen sähkönkulutus
             // taulukko 9
             var mikaIhme = 2.5; // kWh/m2-v 
-            var result2 = 0d;
-            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
-            {
-                result2 += _attrs.NetArea * mikaIhme * (DaysInMonth((int)kuukausi) / 365.0);
-            }
-            Debug.WriteLine($"[ERITE] LL sähköenergia: {result2} kWh/a.");
+            var result2 = _attrs.NetArea * mikaIhme * (DaysInMonth((int)kuukausi) / 365.0);
+            Debug.WriteLine($"[ERITE] LL sähköenergia: {result2} kWh.");
 
             // öljylämmityksen sähköntarvei (taulukko 10)
             var whot = 0.99; //kWh/m2/vuosi
-            var result3 = 0d;
-            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
-            {
-                result3 += _attrs.NetArea * (DaysInMonth((int)kuukausi) / 365.0);
-            }
-            Debug.WriteLine($"[ERITE] ÖP sähköenergia: {result3} kWh/a.");
+            var result3 = _attrs.NetArea * (DaysInMonth((int)kuukausi) / 365.0);
+            Debug.WriteLine($"[ERITE] ÖP sähköenergia: {result3} kWh.");
 
             // lämpimän käyttöveden kiertopumpun sähkönkulutus (kaava 6.7)
             var pumpunTeho = 30; // W
-            var result4 = 0d;
-            foreach (Constants.KK kuukausi in Enum.GetValues(typeof(Constants.KK)))
-            {
-                result4 += pumpunTeho * HoursInMonth(kuukausi) / 1000;
-            }
-            Debug.WriteLine($"[ERITE] LKV kiertopumppu sähköenergia: {result4} kWh/a.");
+            var result4 = pumpunTeho * HoursInMonth(kuukausi) / 1000;
+            Debug.WriteLine($"[ERITE] LKV kiertopumppu sähköenergia: {result4} kWh.");
 
             return result1 + result2 + result3 + result4;
         }
@@ -415,16 +416,10 @@ namespace EriteLib
 
                 // Rakennuksen tilojen ominaislampohavio
                 double Htila = 0d;
-                try
-                {
-                    Htila = Qtila / ((_attrs.InTemp - _OutdoorTemp[kuukausi]) * HoursInMonth(kuukausi)) * 1000;
-                }
-                catch (DivideByZeroException)
-                {
-                    // ignored
-                    Debug.WriteLine($"[ERITE] Htila DivideByZeroException, laskelma kusoo");
-                    Htila = 1d;
-                }
+            var deltaT = (_attrs.InTemp - _OutdoorTemp[kuukausi]);
+            if (0 == deltaT) deltaT = 0.01; // valitse pieni
+
+                Htila = Qtila / (deltaT * HoursInMonth(kuukausi)) * 1000;
 
 
                 // valitaan Crak = 70 Wh/m2K (taulukko 5.6)
@@ -508,6 +503,7 @@ namespace EriteLib
             var tulisija = 3000d; //< TODO: naa maksimit tuli vuosiluvun mukaan
             var ILP = 3000d;
             var QLamm_tilat_netto = latt_tilat_brutto - tulisija * (DaysInMonth(kk) / 365d) - ILP * (DaysInMonth(kk) / 365d);
+            QLamm_tilat_netto = Math.Max(0d, QLamm_tilat_netto);
             Debug.WriteLine($"[ERITE] lamm_tilat_netto: {QLamm_tilat_netto} kWh");
 
             // Tilojen lammonjakojarjestelman lampoenergian tarve
@@ -519,7 +515,7 @@ namespace EriteLib
 
             // Oljykattilan ostoenergian tarve
             var eff_oljy = 0.81; // TODO. parameterize by lammitysmuoto
-            var Qvesi = LKVTarve();
+            var Qvesi = LKVTarve(kk);
             var Qlammitys_oljy = (Qlammitys_tilat + Qvesi) / eff_oljy;
             // Varaavan tulisijan ostoenergian tarve
             var Quuni = Kohta8VaraavaTulisijaPerVuosi() * (DaysInMonth(kk) / 365d);
@@ -530,8 +526,16 @@ namespace EriteLib
             // TODO: sähkö 982, öljy 3092, ... mistä sähkö? kaikki kulutus sinne
             // ks. Excelistä..
 
+            // tassa vasta energiamuodon kerroin
+            var pumput = Kohta5LVIPumputSahkontarve(kk);
+            var kokonais_sahko = (QILP + pumput) * 1.2;
+            var kokonais_puu = Quuni * 0.5;
+            Debug.WriteLine($"[ERITE] Kokonaisenergia Oljy: {Qlammitys_oljy} kWh, Sahko: {kokonais_sahko} kWh, Puu: {kokonais_puu}");
 
-            return 0;
+            // TODO: palauta lista parempia olioita..
+            var painotettu = Qlammitys_oljy + kokonais_sahko + kokonais_puu;
+
+            return painotettu;
         }
 
         // m3/h*m2

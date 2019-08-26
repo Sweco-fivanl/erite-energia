@@ -22,21 +22,22 @@ namespace EriteConsoleRunner
             //var json = serializer.Deserialize<TaloAttributes>(File.ReadAllText(@"..\..\test_data\harjoitustalo.json"));
             //JObject o1 = JObject.Parse
             test.SetConfig(json);
-            Console.WriteLine($"test: {test.LaskeJotain()}");
+            Console.WriteLine($"E-luku: {test.LaskeELuku()} kWh_E/(m2 a)");
 
-            Console.WriteLine($"Maanvaraisen laatan johtumishavio: {test.MaanvaraisenLaatanJohtumishavio()} kWh/a");
-            Console.WriteLine($"Vuotoilman lammitysenergia: {test.VuotoilmanLammitysenergia()} kWh");
-            Console.WriteLine($"e IV Nettotarve: {test.IVBrutto()} kWh");
+            /*
+            Console.WriteLine($"Maanvaraisen laatan johtumishavio: {test.MaanvaraisenLaatanJohtumishavio(1)} kWh/a");
+            Console.WriteLine($"Vuotoilman lammitysenergia: {test.VuotoilmanLammitysenergiaPerVuosi()} kWh");
+            Console.WriteLine($"e IV Nettotarve: {test.IVBrutto(1)} kWh");
             //Console.WriteLine($"e KV Nettotarve: {test.KayttoVedenVakioituKaytto()} kWh/v");
-            Console.WriteLine($"e KV Nettotarve: {test.LKVTarve()} kWh");
-            Console.WriteLine($"e IV sahkoenergia: {test.Kohta5LVIPumputSahkontarve()} kWh");
-            Console.WriteLine($"e muu sahkoenergia: {test.ValaistusJaKulutussahko()} kWh");
-            Console.WriteLine($"ihmis liha energia: {test.LampokuormaHenkiloista()} kWh");
-            Console.WriteLine($"Ikkunoiden lampokuorma: {test.Kohta6IkkunoidenKauttaTulevaSateilyEnergia()} kWh");
-            Console.WriteLine($"Lammitys tarve netto: {test.Kohta7LampokuormienHyodyntaminen()} kWh");
+            Console.WriteLine($"e KV Nettotarve: {test.LKVTarve(1)} kWh");
+            Console.WriteLine($"e IV sahkoenergia: {test.Kohta5LVIPumputSahkontarve(1)} kWh");
+            Console.WriteLine($"e muu sahkoenergia: {test.ValaistusJaKulutussahko(1)} kWh");
+            Console.WriteLine($"ihmis liha energia: {test.LampokuormaHenkiloista(1)} kWh");
+            Console.WriteLine($"Ikkunoiden lampokuorma: {test.Kohta6IkkunoidenKauttaTulevaSateilyEnergia(1)} kWh");
+            Console.WriteLine($"Lammitys tarve netto: {test.Kohta7LampokuormienHyodyntaminen(1)} kWh");
             Console.WriteLine($"Tulisija ja ILP: {test.Kohta8VaraavaTulisijaJaILPPerVuosi()} kWh");
-            Console.WriteLine($"Lammitysjarjestelman energiankulutus: {test.Kohta9LammitysjarjestelmanEnergiankulutus()} kWh");
-
+            Console.WriteLine($"Lammitysjarjestelman energiankulutus: {test.Kohta9LammitysjarjestelmanEnergiankulutus(1)} kWh");
+            */
 
             // testaa uu-arvoja
             var kerrosRakenne = new KerrosRakenne();
