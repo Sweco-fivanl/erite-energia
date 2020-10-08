@@ -72,6 +72,29 @@ namespace EriteLib
             return eLuku;
         }
 
+        public int LaskeELuku2()
+        {
+            // laske nama taustalle
+            if (0 == _Qvuotoilmat.Count) VuotoilmanLammitysenergiaPerVuosi();
+
+            // laske rakennuksen lammitystarve
+            var Qlammitys = 0d; // TODO: jatka tasta
+
+            var ostoEnergia = new OstoEnergia();
+            ostoEnergia.SetHeatingDemand(Qlammitys, Kerroin.Oljy); //< TODO: parameterize
+            var fxQ_lammitys = ostoEnergia.OstoEnergianMaara();
+
+            // sahkolaitteet
+            var QILP = Kohta8ILPPerVuosi();
+            var Qpumput = Apufunktiot.Vuotuinen(Kohta5LVIPumputSahkontarve);
+            var kokonais_sahko = (QILP + Qpumput) * Kerroin.Sahko;
+
+            var eKulutus = fxQ_lammitys + kokonais_sahko;
+
+            Debug.WriteLine($"[ERITE] Painotettu(?) kokonaisenergiankulutus yhteensa: {string.Format("{0:0.00}", eKulutus)} kWh_E)");
+            int eLuku = Convert.ToInt32(eKulutus / _attrs.NetArea);
+            return eLuku;
+        }
 
         // TODO: kuukausi
         public double MaanvaraisenLaatanJohtumishavio(int kk)
