@@ -80,7 +80,7 @@ namespace EriteLib
             // laske rakennuksen lammitystarve
             var Qlammitys = 0d; // TODO: jatka tasta
 
-            var ostoEnergia = new OstoEnergia();
+            var ostoEnergia = new TaloteknisetJarjestelmat();
             ostoEnergia.SetHeatingDemand(Qlammitys, Kerroin.Oljy); //< TODO: parameterize
             var fxQ_lammitys = ostoEnergia.OstoEnergianMaara();
 
@@ -316,7 +316,7 @@ namespace EriteLib
 
             // öljylämmityksen sähköntarvei (taulukko 10)
             var whot = 0.99; //kWh/m2/vuosi
-            var result3 = _attrs.NetArea * (DaysInMonth((int)kuukausi) / 365.0);
+            var result3 = _attrs.NetArea * whot * (DaysInMonth((int)kuukausi) / 365.0);
             Debug.WriteLine($"[ERITE] ÖP sähköenergia: {result3} kWh.");
 
             // lämpimän käyttöveden kiertopumpun sähkönkulutus (kaava 6.7)
@@ -518,6 +518,11 @@ namespace EriteLib
             // Ei riita. Energiankulutuksen laskentaohjeet luvut 6-7
 
             return ostoSahko;
+        }
+
+        private double LammontarveVuodessa(TaloteknisetJarjestelmat energia)
+        {
+            var latt_tilat_brutto = Apufunktiot.Vuotuinen(Kohta7LampokuormienHyodyntaminen);
         }
 
         public double Kohta9LammitysjarjestelmanEnergiankulutus(int kk)
