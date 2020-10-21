@@ -451,6 +451,25 @@ namespace EriteLib
             return 0;
         }
 
+        public double WhatIfMaalampo(int kk)
+        {
+            /*
+             *tarvitaan (Taulukkoa varten)
+                - mitoitus, täys- osateho
+                - kuinka iso osa KV vs. lämmitys
+                - säävyöhyke
+                - menoveden lämpötila
+             */
+
+            // Uusina lähtöarvoina tarvitaan:
+
+            var varaajaV = 300; // dm3
+            var havioYear = 1300; // kWh
+            // Tilojen lämmityksen ja lämpimän käyttöveden lämpöenergiantarpeen suhde  
+
+            return 0;
+        }
+
         // m3/h*m2
         private double GetQ50(double n50, double alaVaippaKaikki, int ilmatilavuus)
         {
