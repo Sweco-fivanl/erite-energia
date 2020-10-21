@@ -20,10 +20,10 @@ namespace EriteLib
 
         static readonly Dictionary<IkkunaTyyppi, double> Gkohtisuora = new Dictionary<IkkunaTyyppi, double>
         {
-           {IkkunaTyyppi.YksinkertainenLasitus, 0.85 }                                  ,
-           {IkkunaTyyppi.KaksinkertainenLasitus, 0.75                                 } ,
-           {IkkunaTyyppi.YksipuitteinenKolmilasinenIkkuna, 0.70                     } ,
-           {IkkunaTyyppi.EristyslasiJaErillislasi, 0.65                               } ,
+           {IkkunaTyyppi.YksinkertainenLasitus, 0.85                      },
+           {IkkunaTyyppi.KaksinkertainenLasitus, 0.75                     },
+           {IkkunaTyyppi.YksipuitteinenKolmilasinenIkkuna, 0.70           },
+           {IkkunaTyyppi.EristyslasiJaErillislasi, 0.65                   },
            {IkkunaTyyppi.EristyslasiMatalaemissiivinenJaErillislasi, 0.55 }
         };
 

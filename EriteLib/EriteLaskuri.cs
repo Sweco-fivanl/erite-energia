@@ -17,7 +17,7 @@ namespace EriteLib
         private Dictionary<Constants.KK, double> _OutdoorTemp;
 
         // ILP SPF-luku
-        private const double ILP_COP = 2.8;
+        //private const double ILP_COP = 2.8;
         // TODO: VILP taulukko 12. "Energiatodistusasetus 2018 liitteineen.pdf"
 
         public EriteLaskuri()
@@ -81,13 +81,25 @@ namespace EriteLib
             var Qlammitys = 0d; // TODO: jatka tasta
 
             var ostoEnergia = new TaloteknisetJarjestelmat();
-            ostoEnergia.SetHeatingDemand(Qlammitys, Kerroin.Oljy); //< TODO: parameterize
-            var fxQ_lammitys = ostoEnergia.OstoEnergianMaara();
+            ostoEnergia.SetMainHeating(new OljyKattila(Qlammitys, _attrs)); //< TODO: parameterize
+            ostoEnergia.AddHeater(new VaraavaUuni()); // oletuksilla 3000 kWh/a
+            ostoEnergia.AddHeater(new IlmaLampoPumppu(_attrs)); // oletuksilla 3000 kWh/a
+            // TODO: addheater kiertovesipumppu, valaistus(?)
+            var lammitysInfot = ostoEnergia.OstoEnergianMaarat();
+            var fxQ_lammitys = 0d;
+            var lisaSahko = 0d;
+            foreach(var lammitin in lammitysInfot)
+            {
+                // f-kerroin
+                fxQ_lammitys += lammitin.GetEnergiamuodonKerroin() * lammitin.GetOstettavaKwh();
+                // ilman kerrointa, raaka
+                lisaSahko += lammitin.GetLisaSahkonKulutus();
+            }
 
             // sahkolaitteet
-            var QILP = Kohta8ILPPerVuosi();
+            //var QILP = Kohta8ILPPerVuosi();
             var Qpumput = Apufunktiot.Vuotuinen(Kohta5LVIPumputSahkontarve);
-            var kokonais_sahko = (QILP + Qpumput) * Kerroin.Sahko;
+            var kokonais_sahko = (lisaSahko + Qpumput) * Kerroin.Sahko;
 
             var eKulutus = fxQ_lammitys + kokonais_sahko;
 
@@ -494,7 +506,7 @@ namespace EriteLib
             // t_tulisijanpinta - t_ymparisto = 100 % -> min. 4 h -> 50 %
 
             // CE-merkinta ja valmistajan ilmoittama hyotysuhde
-            var coeff = 0.6; //< TODO: asetus, tai valmistajan arvo
+            var coeff = Hyotysuhde.VaraavaUuni; //< TODO: asetus, tai valmistajan arvo
 
             // Tulisijan max.energian luovutus
             var MaxOutput = 3000d; // vakio. vuodessa!
@@ -512,7 +524,7 @@ namespace EriteLib
                 // rakennuslupa vireille 2 vuotta ennen valmistumista (nyt saatiin vm. 2004)
                 // ILP max luovutus tilaan 3000 kWh (TODO: taulukosta 15)
                 var ILPMaxOutput = 3000d;
-            var ostoSahko = ILPMaxOutput / ILP_COP;
+            var ostoSahko = ILPMaxOutput / Hyotysuhde.ILP_SCOP;
             Debug.WriteLine($"[ERITE] ILP ostoenergian maara: {ostoSahko} kWh");
 
             // Ei riita. Energiankulutuksen laskentaohjeet luvut 6-7
@@ -520,9 +532,12 @@ namespace EriteLib
             return ostoSahko;
         }
 
-        private double LammontarveVuodessa(TaloteknisetJarjestelmat energia)
+        private double LammontarveVuodessaBrutto(TaloteknisetJarjestelmat energia)
         {
             var latt_tilat_brutto = Apufunktiot.Vuotuinen(Kohta7LampokuormienHyodyntaminen);
+            //var lamm_tilat_netto = latt_tilat_brutto;
+            // TODO: pidetaanko LKV erikseen, ja lämmönjaon hyotysuhde erikseen
+            throw new NotImplementedException();
         }
 
         public double Kohta9LammitysjarjestelmanEnergiankulutus(int kk)

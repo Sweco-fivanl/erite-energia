@@ -25,7 +25,7 @@ namespace EriteConsoleRunner
             //var json = serializer.Deserialize<TaloAttributes>(File.ReadAllText(@"..\..\test_data\harjoitustalo.json"));
             //JObject o1 = JObject.Parse
             test.SetConfig(json);
-            Console.WriteLine($"E-luku: {test.LaskeELuku()} kWh_E/(m2 a)"); // TODO: kutsukakkonen
+            Console.WriteLine($"E-luku: {test.LaskeELuku2()} kWh_E/(m2 a)"); // TODO: kutsukakkonen
             Console.WriteLine();
 
 

@@ -10,6 +10,8 @@ namespace EriteLib
     internal struct Hyotysuhde
     {
         public const double OljyKattila = 0.81;
+        public const double VaraavaUuni = 0.6; // CE-merkinta ja valmistajan ilmoittama hyotysuhde (tai asetus)
+        public const double ILP_SCOP = 2.8; // CE-merkinta ja valmistajan ilmoittama hyotysuhde (tai asetus)
     }
 
     internal struct Kerroin
@@ -41,8 +43,17 @@ namespace EriteLib
 
         internal List<LammitysLaite> OstoEnergianMaarat()
         {
-            //TODO: jne.. var listaus = new List<LammitysLaite>();
-            return /*_laiteSahko +*/ new[] { _mainHeating }.ToList();
+            double vahennys = 0;
+            foreach(var lisaLammitin in _lisaLammittimet)
+            {
+                vahennys += lisaLammitin.TuottoKwhA();
+            }
+            _mainHeating.SetVahennys(vahennys);
+            var laitteet = new[] { _mainHeating }.ToList();
+            laitteet.AddRange(_lisaLammittimet);
+
+            // palauta lammityslaitteet, paalammittimen tuotosta vahennetty muut
+            return laitteet;
         }
     }
 
@@ -51,6 +62,7 @@ namespace EriteLib
         private double _energiamuodonKerroin;
         private double _energiaAnnual;
         private double _polttoaineHyotysuhde;
+        private double _vahennys = 0;
 
         public LammitysLaite(double energia, double kerroin, double hyotysuhde)
         {
@@ -59,15 +71,25 @@ namespace EriteLib
             _polttoaineHyotysuhde = hyotysuhde;
         }
 
+        public double TuottoKwhA()
+        {
+            return _energiaAnnual;
+        }
+
         public double GetOstettavaKwh()
         {
-        //TODO: paalammityslaitteen energiakulutuksen vahennys
-            return _energiaAnnual / _polttoaineHyotysuhde;
+            // paalammityslaitteen energiakulutuksen vahennys muista, takka, ILP..
+            return Math.Max(0, _energiaAnnual - _vahennys) / _polttoaineHyotysuhde;
         }
 
         public double GetEnergiamuodonKerroin()
         {
             return _energiamuodonKerroin;
+        }
+
+        public void SetVahennys(double kwn_a)
+        {
+            _vahennys = kwn_a;
         }
 
         public abstract double GetLisaSahkonKulutus();
@@ -90,6 +112,36 @@ namespace EriteLib
             var result3 = _nettoAla * whot;
             Debug.WriteLine($"[ERITE] ÖP sähköenergia: {result3} kWh.");
             return result3;
+        }
+    }
+
+    internal class VaraavaUuni : LammitysLaite
+    {
+        public VaraavaUuni(/*double valmistajanArvo = -1*/)
+            : base(3000d, Kerroin.Puu, Hyotysuhde.VaraavaUuni)
+        {
+        }
+
+        public override double GetLisaSahkonKulutus()
+        {
+            return 0;
+        }
+    }
+
+    internal class IlmaLampoPumppu : LammitysLaite
+    {
+        private double _nettoAla;
+
+        public IlmaLampoPumppu(TaloAttributes attrs /*double valmistajanSCOP = -1*/)
+            : base(3000d, Kerroin.Puu, Hyotysuhde.VaraavaUuni)
+        {
+            _nettoAla = attrs.NetArea;
+        }
+
+        public override double GetLisaSahkonKulutus()
+        {
+            // sahkon osto tulee kantaluokasta
+            return 0;
         }
     }
 }
