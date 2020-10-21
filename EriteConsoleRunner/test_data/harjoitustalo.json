@@ -1,0 +1,73 @@
+﻿{
+  "ulkoseinat": [
+    {
+      "kuvaus": "Tiiliverhoiltu puurunko, 175 mm mineraalivilla",
+      "area": 90.0,
+      "uArvo": 0.24,
+      "inTemp": null
+    }
+  ],
+  "ylapohjat": [
+    {
+      "kuvaus": "Harjakatto + tuulettuva ullakko, 300 mm puhallusvilla",
+      "area": 147.0,
+      "uArvo": 0.15,
+      "inTemp": null
+    }
+  ],
+  "alapohjat": [
+    {
+      "kuvaus": "Maanvarainen betonilaatta + EPS 100 mm/ 200mm",
+      "area": 147.0,
+      "uArvo": 0.24,
+      "inTemp": null
+    }
+  ],
+  "ovet": [
+    {
+      "kuvaus": "Puualumiinirunko + EPS",
+      "area": 8.2,
+      "uArvo": 1.4,
+      "inTemp": null
+    }
+  ],
+  "ikkunat": [
+    {
+      "ilmansuunta": "Pohjoinen",
+      "kuvaus": "MSE-puualumiini, selektiivipinnoite",
+      "area": 8.8,
+      "uArvo": 1.4,
+      "inTemp": null
+    },
+    {
+      "ilmansuunta": "Itä",
+      "kuvaus": "MSE-puualumiini, selektiivipinnoite",
+      "area": 1.3,
+      "uArvo": 1.4,
+      "inTemp": null
+    },
+    {
+      "ilmansuunta": "Etelä",
+      "kuvaus": "MSE-puualumiini, selektiivipinnoite",
+      "area": 11.1,
+      "uArvo": 1.4,
+      "inTemp": null
+    },
+    {
+      "ilmansuunta": "Länsi",
+      "kuvaus": "MSE-puualumiini, selektiivipinnoite",
+      "area": 3.2,
+      "uArvo": 1.4,
+      "inTemp": null
+    }
+  ],
+  "inTemp": 21.0,
+  "NetArea": 147.0,
+  "NetVolume": 382,
+  "ventilation": {
+    "runningHours": 24,
+    "ulkoilmavirta": 0.4,
+    "ltO_COP": 0.50,
+    "korvausilmanLampo": 18.0
+  }
+}

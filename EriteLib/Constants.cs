@@ -34,7 +34,7 @@ namespace EriteLib
             P, Ko, I, Ka, E, Lo, L, Lu
         }
 
-        enum KK
+        internal enum KK
         {
             Tammikuu  = 1,
             Helmikuu  = 2,
@@ -49,6 +49,45 @@ namespace EriteLib
             Marraskuu = 11,
             Joulukuu  = 12
         }
+
+        // Rakennuksen energiankulutuksen ja lämmitystehontarpeen laskenta 20122017 vain korostukset.PDF
+        // Sivu 20, Taulukko 3.4
+        // "Alapohjan alapuolisen maan kuukausittaisen keskilämpötilan ja vuotuisen keskilämpötilan ero."
+        internal static readonly Dictionary<KK, int> dT_maa = new Dictionary<KK, int>
+        {
+            { KK.Tammikuu, 0},
+            { KK.Helmikuu , -1},
+            { KK.Maaliskuu, -2},
+            { KK.Huhtikuu , -3},
+            { KK.Toukokuu , -3},
+            { KK.Kesäkuu  , -2},
+            { KK.Heinäkuu , 0},
+            { KK.Elokuu   , 1},
+            { KK.Syyskuu  , 2},
+            { KK.Lokakuu  , 3},
+            { KK.Marraskuu, 3},
+            { KK.Joulukuu , 2}
+        };
+
+        // Lämmityste-hon tarve lasketaan paikkakunnan mitoittavalla ulkoilman
+        // lämpötilalla, joka on esitetty energiatehokkuus-asetuksen liitteessä 1.
+        // "Energiatodistusasetus 2018 liitteineen.pdf" -> "Julkaistu energiamääräys 2017.pdf"
+        // säävyöhyke I, Helsinki-Vantaa
+        internal static readonly Dictionary<KK, double> Tu_Vyohyke_I = new Dictionary<KK, double>
+        {
+            { KK.Tammikuu , -3.97},
+            { KK.Helmikuu , -4.50},
+            { KK.Maaliskuu, -2.58},
+            { KK.Huhtikuu ,  4.50},
+            { KK.Toukokuu , 10.76},
+            { KK.Kesäkuu  , 14.23},
+            { KK.Heinäkuu , 17.30},
+            { KK.Elokuu   , 16.05},
+            { KK.Syyskuu  , 10.53},
+            { KK.Lokakuu  ,  6.20},
+            { KK.Marraskuu,  0.50},
+            { KK.Joulukuu , -2.19}
+        };
 
         /*
         static readonly Dictionary<int, Dictionary<Ilmansuunta, double>> SateilyPysty = new Dictionary<int, Dictionary<Ilmansuunta, double>>
