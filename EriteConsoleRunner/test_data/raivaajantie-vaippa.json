@@ -1,0 +1,40 @@
+{
+  "nimi": "Raivaajantie 1" ,
+  "rakennetyypit": [
+    {
+      "nimi": "US1",
+      "kerrokset": [
+        {
+          "kirjasto": "PuukuitulevyHuokoinen",
+          "d": 0.013,
+          "nimi": "haltex"
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "kirjasto": "Sahanpuru",
+          "d": 0.10
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "nimi": "Ilmarako",
+          "lambda": "0.04/0.130",
+          "d": 0.04
+        },
+        {
+          "kirjasto": "Tiili",
+          "d": 0.085
+        }
+      ]
+    }
+  ]
+}
+
+
