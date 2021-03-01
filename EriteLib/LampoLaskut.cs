@@ -25,6 +25,7 @@ namespace EriteLib
          public static Materiaali Lastulevy = new Materiaali("Lastulevy            ", 0.13);
          public static Materiaali KL33 = new Materiaali("KL33                 ", 0.033);
          public static Materiaali Mineraalivilla = new Materiaali("Mineraalivilla       ", 0.045);
+         public static Materiaali Ekovilla = new Materiaali("Ekovilla       ", 0.039);
          public static Materiaali Tuulensuojavilla = new Materiaali("Tuulensuojavilla     ", 0.031);
          public static Materiaali Tiili = new Materiaali("Tiili                ", 0.5);
          public static Materiaali PuukuitulevyBitumi = new Materiaali("PuukuitulevyBitumi   ", 0.065);
@@ -51,6 +52,8 @@ namespace EriteLib
                   return KL33;
                case "Mineraalivilla":
                   return Mineraalivilla;
+               case "Ekovilla":
+                  return Ekovilla;
                case "Tuulensuojavilla":
                   return Tuulensuojavilla;
                case "Tiili":

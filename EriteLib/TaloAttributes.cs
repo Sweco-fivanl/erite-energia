@@ -67,7 +67,7 @@ namespace EriteLib
    // -----------------------------------------------
 
 
-   public class Ulkovaippa
+   public class Ulkovaipat
    {
       public string nimi { get; set; }
       public List<Rakennetyyppi> rakennetyypit { get; set; }
@@ -85,6 +85,8 @@ namespace EriteLib
       public double d { get; set; }
       public string nimi { get; set; }
       public string lambda { get; set; }
+      public KerrosTieto kylmasilta { get; set; }
+      public double osuus { get; set; } = 1;
    }
 
 }

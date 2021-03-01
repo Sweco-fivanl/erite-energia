@@ -60,6 +60,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="test_data\harjoitustalo.json" />
+    <None Include="test_data\kuparikatontie-vaippa.json" />
     <None Include="test_data\raivaajantie-vaippa.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

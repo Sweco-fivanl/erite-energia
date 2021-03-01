@@ -10,7 +10,7 @@ namespace EriteLib
 {
    public class OsaLaskuri
    {
-      private Ulkovaippa _partConfig;
+      private Ulkovaipat _partConfig;
 
       // Use standard numeric format specifiers.
       private const string Specifier = "G";
@@ -20,7 +20,7 @@ namespace EriteLib
          NumberGroupSeparator = ""
       };
 
-      public void SetConfig(Ulkovaippa attributes)
+      public void SetConfig(Ulkovaipat attributes)
       {
          _partConfig = attributes;
       }
@@ -33,19 +33,31 @@ namespace EriteLib
          foreach (var rakenneTieto in _partConfig.rakennetyypit)
          {
             // uusi rakennetyyppi
-            var rakennetyyppi = new KerrosRakenne();
+            var rakennetyyppi = new KerrosRakenne{Name=rakenneTieto.nimi};
             foreach (var kerrosTieto in rakenneTieto.kerrokset)
             {
                Materiaali materiaali = null;
-               if (TryFromKirjasto(kerrosTieto.kirjasto, out materiaali))
+               if (!TryFromKirjasto(kerrosTieto.kirjasto, out materiaali))
                {
-                  //materiaali = new Materiaali()
+                  materiaali = new Materiaali(kerrosTieto.nimi, Evaluate(kerrosTieto.lambda));
+               }
+
+               Materiaali ksMateriaali = null;
+               if (null != kerrosTieto.kylmasilta)
+               {
+                  if (!TryFromKirjasto(kerrosTieto.kylmasilta.kirjasto, out ksMateriaali))
+                  {
+                     ksMateriaali = new Materiaali(kerrosTieto.kylmasilta.nimi, Evaluate(kerrosTieto.kylmasilta.lambda));
+                  }
+               }
+
+               if (null == ksMateriaali)
+               {
                   rakennetyyppi.LisaaKerros(materiaali, kerrosTieto.d);
                }
                else
                {
-                  var lambdaArvo = Evaluate(kerrosTieto.lambda);
-                  rakennetyyppi.LisaaKerros(kerrosTieto.nimi, lambdaArvo, kerrosTieto.d);
+                  rakennetyyppi.LisaaKerros(materiaali, kerrosTieto.d, ksMateriaali, kerrosTieto.kylmasilta.osuus);
                }
             }
             // listalle

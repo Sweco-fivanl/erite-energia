@@ -16,7 +16,11 @@
         },
         {
           "kirjasto": "Sahanpuru",
-          "d": 0.10
+          "d": 0.10,
+          "kylmasilta": {
+            "kirjasto": "Puu",
+            "osuus": 0.083
+          } 
         },
         {
           "kirjasto": "Puu",
@@ -31,6 +35,39 @@
         {
           "kirjasto": "Tiili",
           "d": 0.085
+        }
+      ]
+    },
+    {
+      "nimi": "US2 (ullakon vastainen)",
+      "kerrokset": [
+        {
+          "kirjasto": "PuukuitulevyHuokoinen",
+          "d": 0.013,
+          "nimi": "haltex"
+        },
+        {
+          "kirjasto": "Lastulevy",
+          "d": 0.013,
+          "nimi": "OSB jäykistys"
+        },
+        {
+          "kirjasto": "Mineraalivilla",
+          "d": 0.150,
+          "kylmasilta": {
+            "kirjasto": "Puu",
+            "osuus": 0.083
+          }
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "kirjasto": "PuukuitulevyHuokoinen",
+          "d": 0.025,
+          "nimi": "tuulensuoja"
         }
       ]
     }

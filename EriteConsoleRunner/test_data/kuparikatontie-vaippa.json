@@ -1,0 +1,194 @@
+{
+  "nimi": "Kuparikatontie 22",
+  "rakennetyypit": [
+    {
+      "nimi": "US1",
+      "kerrokset": [
+        {
+          "kirjasto": "PuukuitulevyHuokoinen",
+          "d": 0.013,
+          "nimi": "haltex"
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "kirjasto": "Sahanpuru",
+          "d": 0.10,
+          "kylmasilta": {
+            "kirjasto": "Puu",
+            "osuus": 0.083
+          }
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "nimi": "Ilmarako",
+          "lambda": "0.04/0.130",
+          "d": 0.04
+        },
+        {
+          "kirjasto": "Tiili",
+          "d": 0.085
+        }
+      ]
+    },
+    {
+      "nimi": "US2 (vintin paatyseina)",
+      "kerrokset": [
+        {
+          "kirjasto": "PuukuitulevyHuokoinen",
+          "d": 0.013,
+          "nimi": "haltex"
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "kirjasto": "Mineraalivilla",
+          "d": 0.100,
+          "kylmasilta": {
+            "kirjasto": "Puu",
+            "osuus": 0.083
+          }
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "nimi": "Ilmarako",
+          "lambda": "0.04/0.130",
+          "d": 0.04
+        },
+        {
+          "kirjasto": "Tiili",
+          "d": 0.085
+        }
+      ]
+    },
+    {
+      "nimi": "US3 (vintin paatyseina)",
+      "kerrokset": [
+        {
+          "kirjasto": "PuukuitulevyHuokoinen",
+          "d": 0.013,
+          "nimi": "haltex"
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "kirjasto": "Mineraalivilla",
+          "d": 0.100,
+          "kylmasilta": {
+            "kirjasto": "Puu",
+            "osuus": 0.083
+          }
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "kirjasto": "PuukuitulevyHuokoinen",
+          "d": 0.013,
+          "nimi": "tuulensuoja"
+        }
+      ]
+    },
+    {
+      "nimi": "US4 (perusmuuri)",
+      "kerrokset": [
+        {
+          "kirjasto": "LaastiKalkkisementti",
+          "d": 0.025,
+          "nimi": "rappaus"
+        },
+        {
+          "nimi": "Kenno kevytsoraharkko",
+          "d": 0.300,
+          "lambda": 0.15
+        },
+        {
+          "kirjasto": "LaastiKalkkisementti",
+          "d": 0.025,
+          "nimi": "rappaus"
+        }
+      ]
+    },
+    {
+      "nimi": "AP1",
+      "kerrokset": [
+        {
+          "kirjasto": "Betoni",
+          "d": 0.080
+        },
+        {
+          "kirjasto": "EPS",
+          "d": 0.150
+        }
+      ]
+    },
+    {
+      "nimi": "AP2 (pesutilat)",
+      "kerrokset": [
+        {
+          "kirjasto": "Laatat",
+          "d": 0.015
+        },
+        {
+          "kirjasto": "Betoni",
+          "d": 0.080
+        }
+      ]
+    },
+    {
+      "nimi": "YP1 (vinot osuudet)",
+      "kerrokset": [
+        {
+          "kirjasto": "Lastulevy",
+          "d": 0.012
+        },
+        {
+          "kirjasto": "Mineraalivilla",
+          "d": 0.125,
+          "kylmasilta": {
+            "kirjasto": "Puu",
+            "osuus": 0.083
+          }
+        }
+      ]
+    },
+    {
+      "nimi": "YP2 (ylakolmio)",
+      "kerrokset": [
+        {
+          "kirjasto": "Lastulevy",
+          "d": 0.012
+        },
+        {
+          "kirjasto": "Mineraalivilla",
+          "d": 0.300,
+          "kylmasilta": {
+            "kirjasto": "Puu",
+            "osuus": 0.083
+          } 
+        }
+      ]
+    }
+  ]
+}
+
+
