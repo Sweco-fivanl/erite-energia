@@ -10,6 +10,15 @@
           "nimi": "haltex"
         },
         {
+          "kirjasto": "Lastulevy",
+          "d": 0.013,
+          "nimi": "OSB jäykistys"
+        },
+        {
+          "kirjasto": "Mineraalivilla",
+          "d": 0.050
+        },
+        {
           "kirjasto": "Puu",
           "d": 0.022,
           "nimi": "vaakalaudoitus"
@@ -20,7 +29,7 @@
           "kylmasilta": {
             "kirjasto": "Puu",
             "osuus": 0.083
-          } 
+          }
         },
         {
           "kirjasto": "Puu",
@@ -56,7 +65,7 @@
           "d": 0.150,
           "kylmasilta": {
             "kirjasto": "Puu",
-            "osuus": 0.083
+            "osuus": 0.05
           }
         },
         {
@@ -68,6 +77,65 @@
           "kirjasto": "PuukuitulevyHuokoinen",
           "d": 0.025,
           "nimi": "tuulensuoja"
+        }
+      ]
+    },
+    {
+      "nimi": "AP1",
+      "kerrokset": [
+        {
+          "kirjasto": "Betoni",
+          "d": 0.080
+        },
+        {
+          "kirjasto": "EPS",
+          "d": 0.150
+        }
+      ]
+    },
+    {
+      "nimi": "YP1 (ullakon sivukkaat)",
+      "kerrokset": [
+        {
+          "kirjasto": "Kipsilevy",
+          "d": 0.013
+        },
+        {
+          "nimi": "Ilmarako",
+          "lambda": "0.04/0.130",
+          "d": 0.050
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "umpilaudoitus"
+        },
+        {
+          "kirjasto": "Sahanpuru",
+          "d": 0.400
+        }
+      ]
+    },
+    {
+      "nimi": "YP2 (ylakolmio)",
+      "kerrokset": [
+        {
+          "kirjasto": "Kipsilevy",
+          "d": 0.013
+        },
+        {
+          "nimi": "Ilmarako",
+          "lambda": "0.04/0.130",
+          "d": 0.050
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "umpilaudoitus"
+        },
+        {
+          "kirjasto": "Sahanpuru",
+          "d": 0.500
         }
       ]
     }
