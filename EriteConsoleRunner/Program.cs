@@ -61,6 +61,7 @@ namespace EriteConsoleRunner
          Console.WriteLine("----------------------------------------");
          Console.WriteLine(osaJson.nimi);
          Console.WriteLine("----------------------------------------");
+         Console.WriteLine();
          foreach (var rakenneTyyppi in osat)
          {
             Console.WriteLine(rakenneTyyppi.Rapsaa_U());
@@ -78,6 +79,7 @@ namespace EriteConsoleRunner
          Console.WriteLine("----------------------------------------");
          Console.WriteLine(osaJson.nimi);
          Console.WriteLine("----------------------------------------");
+         Console.WriteLine();
          foreach (var rakenneTyyppi in osat2)
          {
             Console.WriteLine(rakenneTyyppi.Rapsaa_U());

@@ -35,7 +35,11 @@ namespace EriteLib
          foreach (var rakenneTieto in _partConfig.rakennetyypit)
          {
             // uusi rakennetyyppi
-            var rakennetyyppi = new KerrosRakenne{Name=rakenneTieto.nimi};
+            var rakennetyyppi = new KerrosRakenne
+            {
+               Name = rakenneTieto.nimi,
+               ReportArea = !string.IsNullOrWhiteSpace(rakenneTieto.area) ? Evaluate(rakenneTieto.area) : double.MinValue
+            };
             foreach (var kerrosTieto in rakenneTieto.kerrokset)
             {
                Materiaali materiaali = null;

@@ -29,6 +29,7 @@ namespace EriteLib
         public string Name { get; set; }
         public double Rsi { get; set; } = 0.130;
         public double Rse { get; set; } = 0.040;
+        public double ReportArea { get; set; }
         private List<MateriaaliKerros> _kerrokset;
         public List<MateriaaliKerros> Kerrokset
         {
@@ -39,9 +40,14 @@ namespace EriteLib
             }
         }
 
+
         public void LisaaKerros(Materiaali materiaali, double d)
         {
-            Kerrokset.Add(new MateriaaliKerros { Materiaali = materiaali, Thickness = d });
+            Kerrokset.Add(new MateriaaliKerros
+            {
+               Materiaali = materiaali, 
+               Thickness = d
+            });
         }
 
         public void LisaaKerros(string name, double lambda, double d)
@@ -124,7 +130,12 @@ namespace EriteLib
             maxLen = Math.Max(20, maxLen);
 
             var rapsa = new StringBuilder();
-            rapsa.Append(Name ?? "<noname>").AppendLine(" :");
+            rapsa.Append(Name ?? $"<noname>");
+            if (ReportArea > 0)
+            {
+               rapsa.Append($" [pinta-ala: {ReportArea} m2]");
+            }
+            rapsa.AppendLine(" :");
             KerrosTiedot(rapsa, maxLen, "Pintavastus(i)", Rsi);
             foreach (var mat in Kerrokset)
             {
@@ -197,6 +208,7 @@ namespace EriteLib
         public Kylmasilta Kylmasilta { get; set; }
         public Materiaali Materiaali { get; set; }
         public double Thickness { get; set; }
+        public double ReportArea { get; set; }
         //public double GetRT()
         //{
         //    if (null == Kylmasilta) return Materiaali?.GetR() ?? 0d;

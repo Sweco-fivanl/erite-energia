@@ -76,6 +76,7 @@ namespace EriteLib
    public class Rakennetyyppi
    {
       public string nimi { get; set; }
+      public string area { get; set; }
       public List<KerrosTieto> kerrokset { get; set; }
    }
 
