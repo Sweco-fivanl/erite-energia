@@ -76,7 +76,7 @@ namespace EriteLib
       private bool TryFromKirjasto(string avain, out Materiaali materiaali)
       {
          var kirjasto = new LampoLaskut.Lbd();
-         var amountField = LampoLaskut.Lbd.LataaKirjastosta(avain);
+         var amountField = kirjasto.LataaKirjastosta(avain);
          if (null != amountField)
          {
             materiaali = amountField;

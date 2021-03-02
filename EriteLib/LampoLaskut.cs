@@ -34,10 +34,21 @@ namespace EriteLib
          public static Materiaali LaastiKalkkisementti = new Materiaali("Laasti (kalkkisementti)", 0.80);
          public static Materiaali Kevytsorabetoni = new Materiaali("Kevytsorabetoni", 0.24);
          public static Materiaali EPS = new Materiaali("solumuovilevy, paisutettu polystyreeni", 0.041);
+         public static Materiaali SPU = new Materiaali("solumuovi, polyuretaania", 0.030);
          public static Materiaali Laatat = new Materiaali("Tiilet, keraaminen/posliini", 1.30);
 
-         public static Materiaali LataaKirjastosta(string name)
+         public Materiaali LataaKirjastosta(string name)
          {
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            var amountField = this.GetType().GetField(name);
+            object material = amountField.GetValue(this);
+            if (material is Materiaali conversionTarget)
+            {
+               return conversionTarget;
+            }
+            Debug.WriteLine($"[ERITE] Materiaali '{name}' ei toteutettu hakuun.");
+            return null;
+            /*
             switch (name)
             {
                case "Betoni":
@@ -70,12 +81,15 @@ namespace EriteLib
                   return Kevytsorabetoni;
                case "EPS":
                   return EPS;
+               case "SPU":
+                  return SPU;
                case "Laatat":
                   return Laatat;
                default:
                   Debug.WriteLine($"[ERITE] Materiaali '{name}' ei toteutettu hakuun.");
                   return null;
             }
+            */
          }
       }
    }

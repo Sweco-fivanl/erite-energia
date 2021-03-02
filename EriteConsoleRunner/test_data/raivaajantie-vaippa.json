@@ -3,7 +3,7 @@
   "rakennetyypit": [
     {
       "nimi": "US1",
-      "area":  "80 + 20.6 + 13.7 - 21.6",
+      "area": "80 + 20.6 + 13.7 - 21.6",
       "kerrokset": [
         {
           "kirjasto": "PuukuitulevyHuokoinen",
@@ -50,7 +50,7 @@
     },
     {
       "nimi": "US2 (ullakon vastainen)",
-      "area":  40.0,
+      "area": 40.0,
       "kerrokset": [
         {
           "kirjasto": "PuukuitulevyHuokoinen",
@@ -83,8 +83,71 @@
       ]
     },
     {
+      "nimi": "US3 (perusmuuri, pesutilat)",
+      "area": "15 - 1.2",
+      "kerrokset": [
+        {
+          "kirjasto": "Kipsilevy",
+          "d": 0.013,
+          "name": "Markatilakipsilevy"
+        },
+        {
+          "kirjasto": "SPU",
+          "d": 0.040
+        },
+        {
+          "kirjasto": "Tiili",
+          "d": 0.085
+        },
+        {
+          "nimi": "Ilmarako, tuulettumaton",
+          "lambda": 0.16,
+          "d": 0.040,
+          "kuvaus": "RakMK C4 TAULUKKO 3. TUULETTUMATTOMAN ILMAKERROKSEN LÄMMÖNVASTUS Rg"
+        },
+        {
+          "kirjasto": "Betoni",
+          "d": 0.230
+        },
+        {
+          "kirjasto": "LaastiKalkkisementti",
+          "d": 0.025,
+          "nimi": "rappaus"
+        }
+      ]
+    },
+    {
+      "nimi": "US4 (perusmuuri)",
+      "area": "45 - 1.6",
+      "kerrokset": [
+        {
+          "kirjasto": "LaastiKalkkisementti",
+          "d": 0.025,
+          "nimi": "rappaus"
+        },
+        {
+          "kirjasto": "Tiili",
+          "d": 0.085
+        },
+        {
+          "nimi": "Ilmarako, tuulettumaton",
+          "lambda": 0.16,
+          "d": 0.040
+        },
+        {
+          "kirjasto": "Betoni",
+          "d": 0.230
+        },
+        {
+          "kirjasto": "LaastiKalkkisementti",
+          "d": 0.025,
+          "nimi": "rappaus"
+        }
+      ]
+    },
+    {
       "nimi": "AP1",
-      "area":  56,
+      "area": 56,
       "kerrokset": [
         {
           "kirjasto": "Betoni",
@@ -98,7 +161,7 @@
     },
     {
       "nimi": "YP1 (ullakon sivukkaat, kuisti)",
-      "area":  "24.0 + 12.0",
+      "area": "24.0 + 12.0",
       "kerrokset": [
         {
           "kirjasto": "Kipsilevy",
@@ -122,7 +185,7 @@
     },
     {
       "nimi": "YP2 (ylakolmio)",
-      "area":  "37.0",
+      "area": "37.0",
       "kerrokset": [
         {
           "kirjasto": "Kipsilevy",
