@@ -2,6 +2,44 @@
   "nimi": "Raivaajantie 1" ,
   "rakennetyypit": [
     {
+      "nimi": "US0 (alkup.)",
+      "area": "80 + 20.6 + 13.7 - 21.6",
+      "kerrokset": [
+        {
+          "kirjasto": "PuukuitulevyHuokoinen",
+          "d": 0.013,
+          "nimi": "haltex"
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "kirjasto": "Sahanpuru",
+          "d": 0.10,
+          "kylmasilta": {
+            "kirjasto": "Puu",
+            "osuus": 0.083
+          }
+        },
+        {
+          "kirjasto": "Puu",
+          "d": 0.022,
+          "nimi": "vaakalaudoitus"
+        },
+        {
+          "nimi": "Ilmarako",
+          "lambda": "0.04/0.130",
+          "d": 0.04
+        },
+        {
+          "kirjasto": "Tiili",
+          "d": 0.085
+        }
+      ]
+    },
+    {
       "nimi": "US1",
       "area": "80 + 20.6 + 13.7 - 21.6",
       "kerrokset": [
@@ -13,7 +51,7 @@
         {
           "kirjasto": "Lastulevy",
           "d": 0.013,
-          "nimi": "OSB jäykistys"
+          "nimi": "OSB jaykistys"
         },
         {
           "kirjasto": "Mineraalivilla",
@@ -60,7 +98,7 @@
         {
           "kirjasto": "Lastulevy",
           "d": 0.013,
-          "nimi": "OSB jäykistys"
+          "nimi": "OSB jaykistys"
         },
         {
           "kirjasto": "Mineraalivilla",
@@ -103,7 +141,7 @@
           "nimi": "Ilmarako, tuulettumaton",
           "lambda": 0.16,
           "d": 0.040,
-          "kuvaus": "RakMK C4 TAULUKKO 3. TUULETTUMATTOMAN ILMAKERROKSEN LÄMMÖNVASTUS Rg"
+          "kuvaus": "RakMK C4 TAULUKKO 3. TUULETTUMATTOMAN ILMAKERROKSEN Lï¿½MMï¿½NVASTUS Rg"
         },
         {
           "kirjasto": "Betoni",
@@ -130,13 +168,12 @@
           "d": 0.085
         },
         {
-          "nimi": "Ilmarako, tuulettumaton",
-          "lambda": 0.16,
-          "d": 0.040
+          "kirjasto": "EPS",
+          "d": 0.050
         },
         {
           "kirjasto": "Betoni",
-          "d": 0.230
+          "d": 0.250
         },
         {
           "kirjasto": "LaastiKalkkisementti",

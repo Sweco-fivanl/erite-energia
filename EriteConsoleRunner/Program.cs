@@ -69,6 +69,7 @@ namespace EriteConsoleRunner
          }
 
 
+#if KKT
          using (StreamReader file = File.OpenText(@"..\..\test_data\kuparikatontie-vaippa.json"))
          {
             JsonSerializer serializer = new JsonSerializer();
@@ -85,7 +86,7 @@ namespace EriteConsoleRunner
             Console.WriteLine(rakenneTyyppi.Rapsaa_U());
             Console.WriteLine();
          }
-
+#endif
 
          /*
          // Kuparikatontie alakerran seina
